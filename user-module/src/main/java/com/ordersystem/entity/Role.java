@@ -1,4 +1,4 @@
-package com.drill.entity;
+package com.ordersystem.entity;
 
 import lombok.*;
 

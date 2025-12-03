@@ -1,9 +1,9 @@
-package com.drill.dao.impl;
+package com.ordersystem.dao.impl;
 
-import com.drill.constant.UserSchema;
-import com.drill.dao.UserDao;
-import com.drill.entity.User;
-import com.drill.utils.JDBCUtils;
+import com.ordersystem.constant.UserSchema;
+import com.ordersystem.dao.UserDao;
+import com.ordersystem.entity.User;
+import com.ordersystem.utils.JDBCUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

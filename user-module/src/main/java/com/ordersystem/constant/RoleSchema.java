@@ -1,4 +1,4 @@
-package com.drill.constant;
+package com.ordersystem.constant;
 
 public interface RoleSchema {
     String TABLE_NAME = "Role";

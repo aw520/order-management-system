@@ -1,6 +1,6 @@
-package com.drill.domain;
+package com.ordersystem.domain;
 
-import com.drill.constant.OrderStatus;
+import com.ordersystem.constant.OrderStatus;
 import lombok.*;
 
 @Getter

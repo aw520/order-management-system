@@ -1,6 +1,6 @@
-package com.drill.utils;
+package com.ordersystem.utils;
 
-import com.drill.constant.DBInfo;
+import com.ordersystem.constant.DBInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
