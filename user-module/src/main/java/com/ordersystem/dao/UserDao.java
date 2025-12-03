@@ -1,6 +1,6 @@
-package com.drill.dao;
+package com.ordersystem.dao;
 
-import com.drill.entity.User;
+import com.ordersystem.entity.User;
 
 import java.util.Optional;
 

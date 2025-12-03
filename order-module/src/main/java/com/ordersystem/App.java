@@ -1,9 +1,9 @@
-package com.drill;
+package com.ordersystem;
 
-import com.drill.dao.OrderDao;
-import com.drill.dao.impl.OrderDaoImpl;
-import com.drill.domain.SearchCriteria;
-import com.drill.entity.Order;
+import com.ordersystem.dao.OrderDao;
+import com.ordersystem.dao.impl.OrderDaoImpl;
+import com.ordersystem.domain.SearchCriteria;
+import com.ordersystem.entity.Order;
 
 import java.time.ZonedDateTime;
 import java.util.List;

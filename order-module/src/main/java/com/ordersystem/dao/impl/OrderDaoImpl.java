@@ -1,11 +1,11 @@
-package com.drill.dao.impl;
+package com.ordersystem.dao.impl;
 
-import com.drill.constant.OrderSchema;
-import com.drill.constant.OrderStatus;
-import com.drill.dao.OrderDao;
-import com.drill.domain.SearchCriteria;
-import com.drill.entity.Order;
-import com.drill.utils.JDBCUtils;
+import com.ordersystem.constant.OrderSchema;
+import com.ordersystem.constant.OrderStatus;
+import com.ordersystem.dao.OrderDao;
+import com.ordersystem.domain.SearchCriteria;
+import com.ordersystem.entity.Order;
+import com.ordersystem.utils.JDBCUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

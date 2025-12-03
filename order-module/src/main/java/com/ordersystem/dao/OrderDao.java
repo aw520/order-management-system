@@ -1,7 +1,7 @@
-package com.drill.dao;
+package com.ordersystem.dao;
 
-import com.drill.domain.SearchCriteria;
-import com.drill.entity.Order;
+import com.ordersystem.domain.SearchCriteria;
+import com.ordersystem.entity.Order;
 
 import java.util.List;
 

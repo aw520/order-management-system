@@ -1,7 +1,7 @@
-package com.drill;
+package com.ordersystem;
 
-import com.drill.dao.UserDao;
-import com.drill.dao.impl.UserDaoImpl;
+import com.ordersystem.dao.UserDao;
+import com.ordersystem.dao.impl.UserDaoImpl;
 
 public class App {
     public static void main(String[] args) {

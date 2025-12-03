@@ -1,4 +1,4 @@
-package com.drill.constant;
+package com.ordersystem.constant;
 
 public interface OrderSchema {
     String TABLE_NAME = "`Order`";

@@ -1,4 +1,4 @@
-package com.drill.constant;
+package com.ordersystem.constant;
 
 public interface UserSchema {
     String TABLE_NAME = "User";
@@ -7,5 +7,4 @@ public interface UserSchema {
     String LAST_NAME = "last_name";
     String EMAIL = "email";
     String PASSWORD = "password";
-    String ROLE_ID = "role_id";
 }

@@ -1,4 +1,4 @@
-package com.drill.constant;
+package com.ordersystem.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
