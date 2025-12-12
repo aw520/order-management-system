@@ -13,8 +13,9 @@ import java.util.stream.Collectors;
 public enum OrderStatus {
 
     NEW("New", 0),
-    PARTIALLY_FILLED("Partially Filled", 1),
-    FILLED("Filled", 2);
+    CONFIRMED("Confirmed", 1),
+    SHIPPED("SHIPPED", 2),
+    CANCELLED("CANCELLED", 3);
 
     private final String value;
     private final Integer dbValue;

@@ -1,12 +1,15 @@
 package com.ordersystem.ordermanagementsystem.repository.impl;
 
+import com.ordersystem.ordermanagementsystem.constant.OrderStatus;
 import com.ordersystem.ordermanagementsystem.dto.SearchCriteria;
 import com.ordersystem.ordermanagementsystem.entity.Order;
 import com.ordersystem.ordermanagementsystem.repository.OrderRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 
@@ -14,28 +17,116 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class OrderRepositoryImpl implements OrderRepositoryCustom {
+public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
     @PersistenceContext
     private EntityManager em;
 
     @Override
-    public List<Order> searchOrder(SearchCriteria criteria) {
+    public List<Order> searchOrder(SearchCriteria searchCriteria) {
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Order> query = cb.createQuery(Order.class);
         Root<Order> root = query.from(Order.class);
 
-        // Add dynamic where conditions here using criteria
-        // For example:
         List<Predicate> predicates = new ArrayList<>();
-        if (criteria.getSide() != null) {
-            predicates.add(cb.equal(root.get("side"), criteria.getSide()));
+
+        // orderId LIKE
+        if (searchCriteria.getOrderIdLike() != null &&
+                !searchCriteria.getOrderIdLike().trim().isEmpty()) {
+
+            predicates.add(
+                    cb.like(
+                            root.get("orderId"),
+                            "%" + searchCriteria.getOrderIdLike() + "%"
+                    )
+            );
+        }
+
+        // status =
+        if (searchCriteria.getStatus() != null) {
+            predicates.add(
+                    cb.equal(
+                            root.get("status"),
+                            searchCriteria.getStatus()
+                    )
+            );
         }
 
         query.where(predicates.toArray(new Predicate[0]));
-        return em.createQuery(query).getResultList();
+        query.orderBy(cb.desc(root.get("creationTime")));
+
+        TypedQuery<Order> typedQuery = em.createQuery(query);
+
+        // pagination
+        int pageSize = searchCriteria.getPageSize();
+        int pageNumber = searchCriteria.getPageNumber();
+        int offset = (pageNumber - 1) * pageSize;
+
+        typedQuery.setFirstResult(offset);
+        typedQuery.setMaxResults(pageSize);
+
+        return typedQuery.getResultList();
     }
 
-    // Implement the other methods similarly...
+
+    @Override
+    public List<Order> searchOrder(SearchCriteria searchCriteria, Integer userId) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Order> query = cb.createQuery(Order.class);
+        Root<Order> root = query.from(Order.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // userId LIKE
+        predicates.add(cb.equal(root.get("userId"), userId));
+
+        // orderId LIKE
+        if (searchCriteria.getOrderIdLike() != null &&
+                !searchCriteria.getOrderIdLike().trim().isEmpty()) {
+
+            predicates.add(
+                    cb.like(
+                            root.get("orderId"),
+                            "%" + searchCriteria.getOrderIdLike() + "%"
+                    )
+            );
+        }
+
+        // status =
+        if (searchCriteria.getStatus() != null) {
+            predicates.add(
+                    cb.equal(
+                            root.get("status"),
+                            searchCriteria.getStatus()
+                    )
+            );
+        }
+
+        query.where(predicates.toArray(new Predicate[0]));
+        query.orderBy(cb.desc(root.get("creationTime")));
+
+        TypedQuery<Order> typedQuery = em.createQuery(query);
+
+        // pagination
+        int pageSize = searchCriteria.getPageSize();
+        int pageNumber = searchCriteria.getPageNumber();
+        int offset = (pageNumber - 1) * pageSize;
+
+        typedQuery.setFirstResult(offset);
+        typedQuery.setMaxResults(pageSize);
+
+        return typedQuery.getResultList();
+    }
+
+    /*
+    @Override
+    public Order updateOrderStatus(String orderId, OrderStatus status) {
+        Order order = em.find(Order.class, orderId);
+        order.setOrderStatus(status.getDbValue());
+        order.setLastUpdateTime();
+        return order;
+    }
+    */
 }
 
