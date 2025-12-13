@@ -1,6 +1,5 @@
 # 🧾 Order Management System
 
-**Date:** February 2025  
 **Tech Stack:** Java, Spring Boot, Hibernate, MySQL, Spring Security, JUnit
 
 ---
