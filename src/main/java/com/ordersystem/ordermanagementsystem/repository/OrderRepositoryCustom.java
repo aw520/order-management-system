@@ -9,5 +9,6 @@ import java.util.List;
 public interface OrderRepositoryCustom {
     List<Order> searchOrder(SearchCriteria criteria);
     List<Order> searchOrder(SearchCriteria criteria, Integer userId);
+    //Order createOrder(Order order);
     //Order updateOrderStatus(String orderId, OrderStatus status);
 }

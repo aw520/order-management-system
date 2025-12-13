@@ -26,4 +26,6 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    //TODO: relationship between order and products
 }

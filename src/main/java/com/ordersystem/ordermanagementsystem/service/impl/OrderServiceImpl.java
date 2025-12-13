@@ -7,6 +7,7 @@ import com.ordersystem.ordermanagementsystem.repository.OrderRepository;
 import com.ordersystem.ordermanagementsystem.repository.OrderRepositoryCustom;
 import com.ordersystem.ordermanagementsystem.exception.OrderNotFoundException;
 import com.ordersystem.ordermanagementsystem.exception.PermissionDeniedException;
+import com.ordersystem.ordermanagementsystem.request.OrderCreateRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,16 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderRepositoryCustom orderRepositoryCustom;
 
+    //TODO: orderCreation
     @Override
     @Transactional
-    public Order createOrder(Order order) {
+    public Order createOrder(OrderCreateRequest orderCreateRequest, Integer userId) {
+
+        Order order = new Order();
         return orderRepository.save(order);
     }
+
+    //TODO: orderComfirmation
 
     @Override
     @Transactional
