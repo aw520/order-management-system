@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.ordersystem.ordermanagementsystem.service.UserService;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(Integer id) {
+    public Optional<User> findById(UUID id) {
         return userRepository.findById(id);
     }
 }

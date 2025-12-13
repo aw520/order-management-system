@@ -4,6 +4,9 @@ package com.ordersystem.ordermanagementsystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 @Entity
 @Table(name = "products")
 @Getter
@@ -12,16 +15,18 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Products {
+public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID productId;
     private String productName;
-    private Double productPrice;
+    private BigDecimal productPrice;
     private String productDescription;
     private String imageUrl;
     private String currency;
     private Integer quantity;
-    //TODO: Relationship between products and orders
+    @Version
+    private Long version;
+    //Relationship between products and orders
 
 }

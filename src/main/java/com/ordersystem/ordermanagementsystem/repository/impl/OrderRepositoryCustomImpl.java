@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
@@ -71,7 +72,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
 
     @Override
-    public List<Order> searchOrder(SearchCriteria searchCriteria, Integer userId) {
+    public List<Order> searchOrder(SearchCriteria searchCriteria, UUID userId) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Order> query = cb.createQuery(Order.class);
         Root<Order> root = query.from(Order.class);

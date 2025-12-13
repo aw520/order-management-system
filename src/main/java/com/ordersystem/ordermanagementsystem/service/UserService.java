@@ -3,6 +3,7 @@ package com.ordersystem.ordermanagementsystem.service;
 import com.ordersystem.ordermanagementsystem.entity.User;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserService {
 
@@ -12,6 +13,6 @@ public interface UserService {
     User registerLocalUser(String firstName, String lastName, String email, String rawPassword);
     User authenticateLocalUser(String email, String rawPassword);
     Optional<User> findByEmail(String email);
-    Optional<User> findById(Integer id);
+    Optional<User> findById(UUID id);
 
 }

@@ -3,17 +3,25 @@ package com.ordersystem.ordermanagementsystem.service.impl;
 import com.ordersystem.ordermanagementsystem.constant.OrderStatus;
 import com.ordersystem.ordermanagementsystem.dto.SearchCriteria;
 import com.ordersystem.ordermanagementsystem.entity.Order;
+import com.ordersystem.ordermanagementsystem.entity.OrderProduct;
+import com.ordersystem.ordermanagementsystem.entity.Product;
+import com.ordersystem.ordermanagementsystem.entity.User;
+import com.ordersystem.ordermanagementsystem.exception.*;
 import com.ordersystem.ordermanagementsystem.repository.OrderRepository;
 import com.ordersystem.ordermanagementsystem.repository.OrderRepositoryCustom;
-import com.ordersystem.ordermanagementsystem.exception.OrderNotFoundException;
-import com.ordersystem.ordermanagementsystem.exception.PermissionDeniedException;
+import com.ordersystem.ordermanagementsystem.repository.ProductRepository;
+import com.ordersystem.ordermanagementsystem.repository.UserRepository;
+import com.ordersystem.ordermanagementsystem.request.CreateOrderItemRequest;
 import com.ordersystem.ordermanagementsystem.request.OrderCreateRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.ordersystem.ordermanagementsystem.service.OrderService;
+
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,36 +29,86 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderRepositoryCustom orderRepositoryCustom;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
-    //TODO: orderCreation
+    //orderCreation but not confirmed
     @Override
     @Transactional
-    public Order createOrder(OrderCreateRequest orderCreateRequest, Integer userId) {
+    public Order createOrder(OrderCreateRequest orderCreateRequest, UUID userId) {
+        BigDecimal price = BigDecimal.ZERO;
+        Order order = Order.builder()
+                .orderStatus(OrderStatus.NEW)
+                .build();
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException(userId.toString()));
+        order.setUser(user);
+        for(CreateOrderItemRequest item : orderCreateRequest.getOrderItems()){
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(()-> new ProductNotFoundException(item.getProductId().toString()));
 
-        Order order = new Order();
+            BigDecimal unitPrice = product.getProductPrice();
+            price = price.add(unitPrice.multiply(BigDecimal.valueOf(item.getQuantity())));
+
+            OrderProduct orderProduct = new OrderProduct();
+            orderProduct.setProduct(product);
+            orderProduct.setQuantity(item.getQuantity());
+            orderProduct.setPrice(unitPrice); // snapshot
+            order.addProduct(orderProduct);
+        }
+        order.setPrice(price);
+        order.setCurrency(orderCreateRequest.getCurrency());
+        ZonedDateTime now = ZonedDateTime.now();
+        order.setCreationTime(now);
+        order.setLastUpdateTime(now);
         return orderRepository.save(order);
     }
 
-    //TODO: orderComfirmation
-
+    //orderComfirmation
     @Override
     @Transactional
-    public Order updateOrderStatus(String orderId, OrderStatus newStatus) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if(order == null){
-            throw new OrderNotFoundException(orderId);
+    public Order confirmOrder(UUID orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
+        if(!order.getOrderStatus().equals(OrderStatus.NEW)){
+            throw new OrderConfirmationFailedException("cannot confirm a " + order.getOrderStatus().toString() + " order");
         }
-        order.setOrderStatus(newStatus.getDbValue());
+        for(OrderProduct op : order.getOrderProducts()){
+            Product product = op.getProduct();
+            if(op.getQuantity()>product.getQuantity()){
+                throw new OrderConfirmationFailedException(product.getProductName() + " is out of stock");
+            }
+            product.setQuantity(product.getQuantity()-op.getQuantity());
+        }
+        order.setOrderStatus(OrderStatus.CONFIRMED);
         order.setLastUpdateTime(ZonedDateTime.now());
         return order;
     }
 
+
     @Override
     @Transactional
-    public Order updateOrderStatus(String orderId, OrderStatus newStatus, Integer userId) {
+    public Order updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId) {
+        //can only update from confirmed to shipped,
+        //TODO: only non client can do this
         Order order = orderRepository.findById(orderId).orElse(null);
         if(order == null){
-            throw new OrderNotFoundException(orderId);
+            throw new OrderNotFoundException(orderId.toString());
+        }
+        if(!order.getOrderStatus().equals(OrderStatus.CONFIRMED)
+        ||!newStatus.equals(OrderStatus.SHIPPED)){
+            throw new OrderStatusUpdateFailedException("cannot update order status from " + order.getOrderStatus().toString() + " to " + newStatus.toString());
+        }
+        order.setOrderStatus(newStatus);
+        order.setLastUpdateTime(ZonedDateTime.now());
+        return order;
+    }
+
+    /*
+    @Override
+    @Transactional
+    public Order updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if(order == null){
+            throw new OrderNotFoundException(orderId.toString());
         }
         if(!order.getUser().getUserId().equals(userId)){
             throw new PermissionDeniedException("update order");
@@ -59,14 +117,40 @@ public class OrderServiceImpl implements OrderService {
         order.setLastUpdateTime(ZonedDateTime.now());
         return order;
     }
+    */
 
+    /*
     @Override
     public List<Order> searchOrders(SearchCriteria searchCriteria) {
         return orderRepositoryCustom.searchOrder(searchCriteria);
     }
+    */
 
     @Override
-    public List<Order> searchOrders(SearchCriteria searchCriteria, Integer userId) {
+    public List<Order> searchOrders(SearchCriteria searchCriteria, UUID userId) {
+        //TODO: choose what to call based on user role
         return orderRepositoryCustom.searchOrder(searchCriteria, userId);
     }
+
+    @Override
+    @Transactional
+    public Order cancelOrder(UUID orderId, UUID userId) {
+        //TODO: choose what to do based on user role,
+        //only cancel before shipped
+        Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
+        if(OrderStatus.canCancel(order.getOrderStatus())){
+            throw new CancellationFailedException("cannot cancel an order that has already been shipped");
+        }
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        if(order.getOrderStatus().equals(OrderStatus.CONFIRMED)){
+            List<OrderProduct> orderProduct = order.getOrderProducts();
+            for(OrderProduct op : orderProduct){
+                Product product = op.getProduct();
+                product.setQuantity(product.getQuantity()+op.getQuantity());
+            }
+        }
+        order.setLastUpdateTime(ZonedDateTime.now());
+        return order;
+    }
+
 }

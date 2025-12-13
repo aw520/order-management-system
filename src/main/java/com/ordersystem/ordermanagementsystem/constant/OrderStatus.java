@@ -48,6 +48,10 @@ public enum OrderStatus {
         return NEW;
     }
 
+    public static boolean canCancel(OrderStatus status) {
+        return status == NEW || status == CONFIRMED;
+    }
+
     public static List<String> getAll() {
         return Arrays.stream(OrderStatus.values()).map(OrderStatus::getValue).collect(Collectors.toList());
     }
