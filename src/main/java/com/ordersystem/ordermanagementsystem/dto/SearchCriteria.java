@@ -3,6 +3,8 @@ package com.ordersystem.ordermanagementsystem.dto;
 import com.ordersystem.ordermanagementsystem.constant.OrderStatus;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
@@ -11,7 +13,7 @@ import lombok.*;
 public class SearchCriteria {
     private int pageNumber;
     private int pageSize;
-    private String orderIdLike;
+    private UUID orderId;
     private OrderStatus status;
 
     public SearchCriteria() {
@@ -19,11 +21,4 @@ public class SearchCriteria {
         this.pageSize = 10;
     }
 
-    public String getOrderIdLike() {
-        return orderIdLike;
-    }
-
-    public void setOrderIdLike(String orderIdLike) {
-        this.orderIdLike = orderIdLike;
-    }
 }

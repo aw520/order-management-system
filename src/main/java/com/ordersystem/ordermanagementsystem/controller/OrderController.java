@@ -74,6 +74,18 @@ public class OrderController {
                 .build());
     }
 
+    //POST api/orders/{order-id}/confirm
+    @PostMapping("/{orderId}/confirm")
+    public ResponseEntity<GeneralResponse<OrderResponse>> confirmOrder(@PathVariable String orderId) {
+        OrderResponse orderResponse = orderService.confirmOrder(UUID.fromString(orderId));
+        return ResponseEntity.status(HttpStatus.OK).body(GeneralResponse.<OrderResponse>builder()
+                .serviceStatus(ServiceStatus.builder()
+                        .success(true)
+                        .build())
+                .data(orderResponse)
+                .build());
+    }
+
 
 
 }

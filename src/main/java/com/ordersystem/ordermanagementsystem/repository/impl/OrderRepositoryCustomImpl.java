@@ -1,6 +1,5 @@
 package com.ordersystem.ordermanagementsystem.repository.impl;
 
-import com.ordersystem.ordermanagementsystem.constant.OrderStatus;
 import com.ordersystem.ordermanagementsystem.dto.SearchCriteria;
 import com.ordersystem.ordermanagementsystem.entity.Order;
 import com.ordersystem.ordermanagementsystem.repository.OrderRepositoryCustom;
@@ -32,14 +31,13 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
         List<Predicate> predicates = new ArrayList<>();
 
-        // orderId LIKE
-        if (searchCriteria.getOrderIdLike() != null &&
-                !searchCriteria.getOrderIdLike().trim().isEmpty()) {
+        // orderId
+        if (searchCriteria.getOrderId() != null) {
 
             predicates.add(
-                    cb.like(
+                    cb.equal(
                             root.get("orderId"),
-                            "%" + searchCriteria.getOrderIdLike() + "%"
+                            searchCriteria.getOrderId()
                     )
             );
         }
@@ -48,7 +46,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         if (searchCriteria.getStatus() != null) {
             predicates.add(
                     cb.equal(
-                            root.get("status"),
+                            root.get("orderStatus"),
                             searchCriteria.getStatus()
                     )
             );
@@ -79,17 +77,16 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
         List<Predicate> predicates = new ArrayList<>();
 
-        // userId LIKE
-        predicates.add(cb.equal(root.get("userId"), userId));
+        // userId
+        predicates.add(cb.equal(root.get("user").get("userId"), userId));
 
-        // orderId LIKE
-        if (searchCriteria.getOrderIdLike() != null &&
-                !searchCriteria.getOrderIdLike().trim().isEmpty()) {
+        // orderId
+        if (searchCriteria.getOrderId() != null) {
 
             predicates.add(
-                    cb.like(
+                    cb.equal(
                             root.get("orderId"),
-                            "%" + searchCriteria.getOrderIdLike() + "%"
+                             searchCriteria.getOrderId()
                     )
             );
         }
@@ -98,7 +95,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         if (searchCriteria.getStatus() != null) {
             predicates.add(
                     cb.equal(
-                            root.get("status"),
+                            root.get("orderStatus"),
                             searchCriteria.getStatus()
                     )
             );

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,10 +34,11 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //TODO: relationship between order and products
+    //relationship between order and products
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id")
-    private List<OrderProduct> orderProducts;
+    @Builder.Default
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 
     public void addProduct(OrderProduct product) {
         orderProducts.add(product);

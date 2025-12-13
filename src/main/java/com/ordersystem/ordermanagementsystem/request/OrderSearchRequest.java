@@ -10,7 +10,7 @@ import lombok.*;
 public class OrderSearchRequest {
     private int pageNumber;
     private int pageSize;
-    private String orderIdLike;
+    private String orderId;
     private Integer status;
 }
 

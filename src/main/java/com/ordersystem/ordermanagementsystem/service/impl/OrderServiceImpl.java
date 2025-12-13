@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderResponse> searchOrders(OrderSearchRequest orderSearchRequest, UUID userId) {
         //TODO: choose what to call based on user role
         SearchCriteria searchCriteria = SearchCriteria.builder()
-                .orderIdLike(orderSearchRequest.getOrderIdLike())
+                .orderId(UUID.fromString(orderSearchRequest.getOrderId()))
                 .pageNumber(orderSearchRequest.getPageNumber())
                 .pageSize(orderSearchRequest.getPageSize())
                 .status(OrderStatus.getFromDbValue(orderSearchRequest.getStatus()))
@@ -159,7 +159,7 @@ public class OrderServiceImpl implements OrderService {
         if(!OrderStatus.canCancel(order.getOrderStatus())){
             throw new CancellationFailedException("cannot cancel an order that has already been shipped");
         }
-        order.setOrderStatus(OrderStatus.CANCELLED);
+
         if(order.getOrderStatus().equals(OrderStatus.CONFIRMED)){
             List<OrderProduct> orderProduct = order.getOrderProducts();
             for(OrderProduct op : orderProduct){
@@ -167,6 +167,7 @@ public class OrderServiceImpl implements OrderService {
                 product.setQuantity(product.getQuantity()+op.getQuantity());
             }
         }
+        order.setOrderStatus(OrderStatus.CANCELLED);
         order.setLastUpdateTime(ZonedDateTime.now());
         return getResponseOrder(order);
     }
@@ -193,4 +194,5 @@ public class OrderServiceImpl implements OrderService {
         orderResponse.setItems(list);
         return orderResponse;
     }
+
 }
