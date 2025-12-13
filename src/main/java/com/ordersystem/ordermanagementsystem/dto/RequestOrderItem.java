@@ -1,4 +1,4 @@
-package com.ordersystem.ordermanagementsystem.request;
+package com.ordersystem.ordermanagementsystem.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateOrderItemRequest {
+public class RequestOrderItem {
 
     @NotNull
     private UUID productId;

@@ -1,6 +1,8 @@
 package com.ordersystem.ordermanagementsystem.service.impl;
 
 import com.ordersystem.ordermanagementsystem.constant.OrderStatus;
+import com.ordersystem.ordermanagementsystem.dto.ResponseOrder;
+import com.ordersystem.ordermanagementsystem.dto.ResponseOrderItem;
 import com.ordersystem.ordermanagementsystem.dto.SearchCriteria;
 import com.ordersystem.ordermanagementsystem.entity.Order;
 import com.ordersystem.ordermanagementsystem.entity.OrderProduct;
@@ -11,8 +13,9 @@ import com.ordersystem.ordermanagementsystem.repository.OrderRepository;
 import com.ordersystem.ordermanagementsystem.repository.OrderRepositoryCustom;
 import com.ordersystem.ordermanagementsystem.repository.ProductRepository;
 import com.ordersystem.ordermanagementsystem.repository.UserRepository;
-import com.ordersystem.ordermanagementsystem.request.CreateOrderItemRequest;
+import com.ordersystem.ordermanagementsystem.dto.RequestOrderItem;
 import com.ordersystem.ordermanagementsystem.request.OrderCreateRequest;
+import com.ordersystem.ordermanagementsystem.request.OrderSearchRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import com.ordersystem.ordermanagementsystem.service.OrderService;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,14 +39,14 @@ public class OrderServiceImpl implements OrderService {
     //orderCreation but not confirmed
     @Override
     @Transactional
-    public Order createOrder(OrderCreateRequest orderCreateRequest, UUID userId) {
+    public ResponseOrder createOrder(OrderCreateRequest orderCreateRequest, UUID userId) {
         BigDecimal price = BigDecimal.ZERO;
         Order order = Order.builder()
                 .orderStatus(OrderStatus.NEW)
                 .build();
         User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException(userId.toString()));
         order.setUser(user);
-        for(CreateOrderItemRequest item : orderCreateRequest.getOrderItems()){
+        for(RequestOrderItem item : orderCreateRequest.getOrderItems()){
             Product product = productRepository.findById(item.getProductId())
                     .orElseThrow(()-> new ProductNotFoundException(item.getProductId().toString()));
 
@@ -60,13 +64,14 @@ public class OrderServiceImpl implements OrderService {
         ZonedDateTime now = ZonedDateTime.now();
         order.setCreationTime(now);
         order.setLastUpdateTime(now);
-        return orderRepository.save(order);
+        order = orderRepository.save(order);
+        return getResponseOrder(order);
     }
 
     //orderComfirmation
     @Override
     @Transactional
-    public Order confirmOrder(UUID orderId){
+    public ResponseOrder confirmOrder(UUID orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
         if(!order.getOrderStatus().equals(OrderStatus.NEW)){
             throw new OrderConfirmationFailedException("cannot confirm a " + order.getOrderStatus().toString() + " order");
@@ -80,13 +85,13 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setOrderStatus(OrderStatus.CONFIRMED);
         order.setLastUpdateTime(ZonedDateTime.now());
-        return order;
+        return getResponseOrder(order);
     }
 
 
     @Override
     @Transactional
-    public Order updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId) {
+    public ResponseOrder updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId) {
         //can only update from confirmed to shipped,
         //TODO: only non client can do this
         Order order = orderRepository.findById(orderId).orElse(null);
@@ -99,8 +104,10 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setOrderStatus(newStatus);
         order.setLastUpdateTime(ZonedDateTime.now());
-        return order;
+        return getResponseOrder(order);
     }
+
+
 
     /*
     @Override
@@ -127,18 +134,29 @@ public class OrderServiceImpl implements OrderService {
     */
 
     @Override
-    public List<Order> searchOrders(SearchCriteria searchCriteria, UUID userId) {
+    public List<ResponseOrder> searchOrders(OrderSearchRequest orderSearchRequest, UUID userId) {
         //TODO: choose what to call based on user role
-        return orderRepositoryCustom.searchOrder(searchCriteria, userId);
+        SearchCriteria searchCriteria = SearchCriteria.builder()
+                .orderIdLike(orderSearchRequest.getOrderIdLike())
+                .pageNumber(orderSearchRequest.getPageNumber())
+                .pageSize(orderSearchRequest.getPageSize())
+                .status(orderSearchRequest.getStatus())
+                .build();
+        List<Order> orders = orderRepositoryCustom.searchOrder(searchCriteria, userId);
+        List<ResponseOrder> responseOrders = new ArrayList<>();
+        for(Order order : orders){
+            responseOrders.add(getResponseOrder(order));
+        }
+        return responseOrders;
     }
 
     @Override
     @Transactional
-    public Order cancelOrder(UUID orderId, UUID userId) {
+    public ResponseOrder cancelOrder(UUID orderId, UUID userId) {
         //TODO: choose what to do based on user role,
         //only cancel before shipped
         Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
-        if(OrderStatus.canCancel(order.getOrderStatus())){
+        if(!OrderStatus.canCancel(order.getOrderStatus())){
             throw new CancellationFailedException("cannot cancel an order that has already been shipped");
         }
         order.setOrderStatus(OrderStatus.CANCELLED);
@@ -150,7 +168,29 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         order.setLastUpdateTime(ZonedDateTime.now());
-        return order;
+        return getResponseOrder(order);
     }
 
+
+    public static ResponseOrder getResponseOrder(Order order){
+        ResponseOrder responseOrder = ResponseOrder.builder()
+                .orderId(order.getOrderId())
+                .status(order.getOrderStatus())
+                .totalPrice(order.getPrice())
+                .currency(order.getCurrency())
+                .createdAt(order.getCreationTime())
+                .updatedAt(order.getLastUpdateTime())
+                .build();
+        List<ResponseOrderItem> list = new ArrayList<>();
+        for(OrderProduct op : order.getOrderProducts()){
+            ResponseOrderItem item = ResponseOrderItem.builder()
+                    .productName(op.getProduct().getProductName())
+                    .quantity(op.getQuantity())
+                    .unitPrice(op.getPrice())
+                    .build();
+            list.add(item);
+        }
+        responseOrder.setItems(list);
+        return responseOrder;
+    }
 }
