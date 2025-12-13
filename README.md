@@ -41,11 +41,10 @@ It provides RESTful APIs for creating, updating, canceling, and tracking orders,
 | Framework | Spring Boot |
 | ORM | Hibernate (JPA) |
 | Database | MySQL |
-
 | Testing | JUnit 5 |
 
 <!--- **Security**
     - Configured **Spring Security** with **Role-Based Access Control (RBAC)**.
     - **Admins**: manage all orders.  
       **Users**: access only their own orders.
-| Security | Spring Security (RBAC) |--->
+| Security | Spring Security (RBAC) | --->
