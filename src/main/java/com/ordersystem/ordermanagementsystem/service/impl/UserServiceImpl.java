@@ -3,6 +3,8 @@ package com.ordersystem.ordermanagementsystem.service.impl;
 import com.ordersystem.ordermanagementsystem.entity.User;
 import com.ordersystem.ordermanagementsystem.exception.*;
 import com.ordersystem.ordermanagementsystem.repository.UserRepository;
+import com.ordersystem.ordermanagementsystem.response.LoginResponse;
+import com.ordersystem.ordermanagementsystem.response.UserResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User registerLocalUser(String firstName, String lastName, String email, String rawPassword) {
+    public UserResponse registerLocalUser(String firstName, String lastName, String email, String rawPassword) {
         if(userRepository.findByEmail(email).isPresent()){
             throw new UserAlreadyExistsException(email);
         }
@@ -40,31 +42,39 @@ public class UserServiceImpl implements UserService {
         if(!ruleResult.isValid()){
             throw new InvalidPasswordException(passwordValidator.getMessages(ruleResult).toString());
         }
-        User user = new User().builder().firstName(firstName)
+        User user = User.builder().firstName(firstName)
                 .lastName(lastName).email(email)
                 .password(passwordEncoder.encode(rawPassword))
                 .build();
-        return userRepository.save(user);
+        return getResponseUser(userRepository.save(user));
     }
 
     @Override
-    public User authenticateLocalUser(String email, String rawPassword) {
+    public LoginResponse authenticateLocalUser(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
 
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new InvalidCredentialException("password");
         }
-        return user;
+        return LoginResponse.builder().user(getResponseUser(user)).build();
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public UserResponse findByEmail(String email) {
+        return getResponseUser(userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException(email)));
     }
 
     @Override
-    public Optional<User> findById(UUID id) {
-        return userRepository.findById(id);
+    public UserResponse findById(UUID id) {
+        return getResponseUser(userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id.toString())));
+    }
+
+    public UserResponse getResponseUser(User user){
+        return UserResponse.builder()
+                .userId(user.getUserId())
+                .firstName(user.getFirstName()).
+                lastName(user.getLastName())
+                .email(user.getEmail()).build();
     }
 }

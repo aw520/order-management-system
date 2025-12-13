@@ -1,7 +1,7 @@
 package com.ordersystem.ordermanagementsystem.service.impl;
 
 import com.ordersystem.ordermanagementsystem.constant.OrderStatus;
-import com.ordersystem.ordermanagementsystem.dto.ResponseOrder;
+import com.ordersystem.ordermanagementsystem.response.OrderResponse;
 import com.ordersystem.ordermanagementsystem.dto.ResponseOrderItem;
 import com.ordersystem.ordermanagementsystem.dto.SearchCriteria;
 import com.ordersystem.ordermanagementsystem.entity.Order;
@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
     //orderCreation but not confirmed
     @Override
     @Transactional
-    public ResponseOrder createOrder(OrderCreateRequest orderCreateRequest, UUID userId) {
+    public OrderResponse createOrder(OrderCreateRequest orderCreateRequest, UUID userId) {
         BigDecimal price = BigDecimal.ZERO;
         Order order = Order.builder()
                 .orderStatus(OrderStatus.NEW)
@@ -71,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
     //orderComfirmation
     @Override
     @Transactional
-    public ResponseOrder confirmOrder(UUID orderId){
+    public OrderResponse confirmOrder(UUID orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
         if(!order.getOrderStatus().equals(OrderStatus.NEW)){
             throw new OrderConfirmationFailedException("cannot confirm a " + order.getOrderStatus().toString() + " order");
@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public ResponseOrder updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId) {
+    public OrderResponse updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId) {
         //can only update from confirmed to shipped,
         //TODO: only non client can do this
         Order order = orderRepository.findById(orderId).orElse(null);
@@ -134,25 +134,25 @@ public class OrderServiceImpl implements OrderService {
     */
 
     @Override
-    public List<ResponseOrder> searchOrders(OrderSearchRequest orderSearchRequest, UUID userId) {
+    public List<OrderResponse> searchOrders(OrderSearchRequest orderSearchRequest, UUID userId) {
         //TODO: choose what to call based on user role
         SearchCriteria searchCriteria = SearchCriteria.builder()
                 .orderIdLike(orderSearchRequest.getOrderIdLike())
                 .pageNumber(orderSearchRequest.getPageNumber())
                 .pageSize(orderSearchRequest.getPageSize())
-                .status(orderSearchRequest.getStatus())
+                .status(OrderStatus.getFromDbValue(orderSearchRequest.getStatus()))
                 .build();
         List<Order> orders = orderRepositoryCustom.searchOrder(searchCriteria, userId);
-        List<ResponseOrder> responseOrders = new ArrayList<>();
+        List<OrderResponse> orderResponses = new ArrayList<>();
         for(Order order : orders){
-            responseOrders.add(getResponseOrder(order));
+            orderResponses.add(getResponseOrder(order));
         }
-        return responseOrders;
+        return orderResponses;
     }
 
     @Override
     @Transactional
-    public ResponseOrder cancelOrder(UUID orderId, UUID userId) {
+    public OrderResponse cancelOrder(UUID orderId, UUID userId) {
         //TODO: choose what to do based on user role,
         //only cancel before shipped
         Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
@@ -172,8 +172,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    public static ResponseOrder getResponseOrder(Order order){
-        ResponseOrder responseOrder = ResponseOrder.builder()
+    public OrderResponse getResponseOrder(Order order){
+        OrderResponse orderResponse = OrderResponse.builder()
                 .orderId(order.getOrderId())
                 .status(order.getOrderStatus())
                 .totalPrice(order.getPrice())
@@ -190,7 +190,7 @@ public class OrderServiceImpl implements OrderService {
                     .build();
             list.add(item);
         }
-        responseOrder.setItems(list);
-        return responseOrder;
+        orderResponse.setItems(list);
+        return orderResponse;
     }
 }

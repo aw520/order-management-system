@@ -36,7 +36,7 @@ public enum OrderStatus {
 
     public static OrderStatus getFromDbValue(Integer dbValue) {
         if (dbValue == null) {
-            return NEW;
+            return null;
         }
 
         for (OrderStatus status: OrderStatus.values()) {
@@ -45,7 +45,7 @@ public enum OrderStatus {
             }
         }
 
-        return NEW;
+        return null;
     }
 
     public static boolean canCancel(OrderStatus status) {

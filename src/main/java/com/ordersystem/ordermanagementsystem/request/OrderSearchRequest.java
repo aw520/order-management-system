@@ -11,7 +11,6 @@ public class OrderSearchRequest {
     private int pageNumber;
     private int pageSize;
     private String orderIdLike;
-    private OrderStatus status;
-
+    private Integer status;
 }
 

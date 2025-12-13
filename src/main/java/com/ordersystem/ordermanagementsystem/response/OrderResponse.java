@@ -1,6 +1,7 @@
-package com.ordersystem.ordermanagementsystem.dto;
+package com.ordersystem.ordermanagementsystem.response;
 
 import com.ordersystem.ordermanagementsystem.constant.OrderStatus;
+import com.ordersystem.ordermanagementsystem.dto.ResponseOrderItem;
 import lombok.Builder;
 import lombok.Setter;
 
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @Setter
 @Builder
-public class ResponseOrder {
+public class OrderResponse {
     private UUID orderId;
     private OrderStatus status;
     private BigDecimal totalPrice;
