@@ -26,6 +26,8 @@ It provides RESTful APIs for creating, updating, canceling, and tracking orders,
         - Required fields (e.g., customer ID, item details)
         - Non-negative pricing
         - Unique order IDs
+        - Order confirmation based on in stock quantities
+        - Order cancellation based on order status
 
 - **Testing**
     - Implemented **JUnit** tests across multiple layers (service, controller, repository).
