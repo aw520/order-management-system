@@ -1,6 +1,7 @@
 package com.ordersystem.ordermanagementsystem.entity;
 
 import com.ordersystem.ordermanagementsystem.constant.OrderStatus;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -31,6 +32,7 @@ public class Order {
     private ZonedDateTime lastUpdateTime;
 
     @ManyToOne
+    @NotNull
     @JoinColumn(name = "user_id")
     private User user;
 

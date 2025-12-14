@@ -2,7 +2,7 @@ package com.ordersystem.ordermanagementsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import com.ordersystem.ordermanagementsystem.constant.Role;
+
 
 import java.util.Set;
 import java.util.UUID;
@@ -23,9 +23,16 @@ public class User {
 
     private String firstName;
     private String lastName;
+
+    @Column(unique = true)
     private String email;
     private String password;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Role> roles;
 }

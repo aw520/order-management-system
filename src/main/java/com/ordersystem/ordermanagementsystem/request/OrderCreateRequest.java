@@ -2,6 +2,7 @@ package com.ordersystem.ordermanagementsystem.request;
 
 import com.ordersystem.ordermanagementsystem.dto.RequestOrderItem;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public class OrderCreateRequest {
 
     @NotEmpty
     List<RequestOrderItem> orderItems;
+
+    String userId;
 
     private String currency;
 }

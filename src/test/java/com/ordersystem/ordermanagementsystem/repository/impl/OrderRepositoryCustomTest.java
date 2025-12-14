@@ -89,7 +89,7 @@ class OrderRepositoryCustomTest {
         );
 
         SearchCriteria criteria = SearchCriteria.builder()
-                .orderId(o1.getOrderId()) // ✅ exact UUID
+                .orderId(o1.getOrderId())
                 .pageNumber(1)
                 .pageSize(10)
                 .build();

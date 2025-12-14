@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public interface OrderService {
 
-    OrderResponse createOrder(OrderCreateRequest orderCreateRequest, UUID userId);
+    OrderResponse createOrder(OrderCreateRequest orderCreateRequest);
     OrderResponse confirmOrder(UUID orderId);
     //Order updateOrderStatus(UUID orderId, OrderStatus newStatus);
-    OrderResponse updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId);
-    OrderResponse cancelOrder(UUID orderId, UUID userId);
-    List<OrderResponse> searchOrders(OrderSearchRequest orderSearchRequest, UUID userId);
+    OrderResponse updateOrderStatus(UUID orderId, OrderStatus newStatus);
+    OrderResponse cancelOrder(UUID orderId);
+    List<OrderResponse> searchOrders(OrderSearchRequest orderSearchRequest);
 
 }

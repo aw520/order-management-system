@@ -16,8 +16,10 @@ import com.ordersystem.ordermanagementsystem.repository.UserRepository;
 import com.ordersystem.ordermanagementsystem.dto.RequestOrderItem;
 import com.ordersystem.ordermanagementsystem.request.OrderCreateRequest;
 import com.ordersystem.ordermanagementsystem.request.OrderSearchRequest;
+import com.ordersystem.ordermanagementsystem.security.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.ordersystem.ordermanagementsystem.service.OrderService;
 
@@ -39,7 +41,22 @@ public class OrderServiceImpl implements OrderService {
     //orderCreation but not confirmed
     @Override
     @Transactional
-    public OrderResponse createOrder(OrderCreateRequest orderCreateRequest, UUID userId) {
+    public OrderResponse createOrder(OrderCreateRequest orderCreateRequest) {
+        if(hasRole("ADMIN")&&orderCreateRequest.getUserId()!=null){
+            Order order = submitOrderForUser(orderCreateRequest, UUID.fromString(orderCreateRequest.getUserId()));
+            return getResponseOrder(order);
+        }else if((orderCreateRequest.getUserId()==null
+                    ||(SecurityUtil.getCurrentUserId().equals(UUID.fromString(orderCreateRequest.getUserId()))))
+                &&hasRole("CLIENT")){
+            Order order = submitOrderForUser(orderCreateRequest, SecurityUtil.getCurrentUserId());
+            return getResponseOrder(order);
+        }else{
+            throw new PermissionDeniedException("create order");
+        }
+    }
+
+
+    private Order submitOrderForUser(OrderCreateRequest orderCreateRequest, UUID userId){
         BigDecimal price = BigDecimal.ZERO;
         Order order = Order.builder()
                 .orderStatus(OrderStatus.NEW)
@@ -65,13 +82,16 @@ public class OrderServiceImpl implements OrderService {
         order.setCreationTime(now);
         order.setLastUpdateTime(now);
         order = orderRepository.save(order);
-        return getResponseOrder(order);
+        return order;
     }
 
     //orderComfirmation
     @Override
     @Transactional
     public OrderResponse confirmOrder(UUID orderId){
+        if(!hasRole("ADMIN")){
+            throw new PermissionDeniedException("confirm order");
+        }
         Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
         if(!order.getOrderStatus().equals(OrderStatus.NEW)){
             throw new OrderConfirmationFailedException("cannot confirm a " + order.getOrderStatus().toString() + " order");
@@ -91,10 +111,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse updateOrderStatus(UUID orderId, OrderStatus newStatus, UUID userId) {
+    public OrderResponse updateOrderStatus(UUID orderId, OrderStatus newStatus) {
         //can only update from confirmed to shipped,
-        //TODO: only non client can do this
+        //only non client can do this
+
         Order order = orderRepository.findById(orderId).orElse(null);
+        if(!hasRole("ADMIN")){
+            throw new PermissionDeniedException("update order");
+        }
         if(order == null){
             throw new OrderNotFoundException(orderId.toString());
         }
@@ -134,15 +158,20 @@ public class OrderServiceImpl implements OrderService {
     */
 
     @Override
-    public List<OrderResponse> searchOrders(OrderSearchRequest orderSearchRequest, UUID userId) {
-        //TODO: choose what to call based on user role
+    public List<OrderResponse> searchOrders(OrderSearchRequest orderSearchRequest) {
+        //choose what to call based on a user's role
         SearchCriteria searchCriteria = SearchCriteria.builder()
                 .orderId(UUID.fromString(orderSearchRequest.getOrderId()))
                 .pageNumber(orderSearchRequest.getPageNumber())
                 .pageSize(orderSearchRequest.getPageSize())
                 .status(OrderStatus.getFromDbValue(orderSearchRequest.getStatus()))
                 .build();
-        List<Order> orders = orderRepositoryCustom.searchOrder(searchCriteria, userId);
+        List<Order> orders;
+        if(hasRole("ADMIN")){
+            orders = orderRepositoryCustom.searchOrder(searchCriteria);
+        }else{
+            orders =  orderRepositoryCustom.searchOrder(searchCriteria, SecurityUtil.getCurrentUserId());
+        }
         List<OrderResponse> orderResponses = new ArrayList<>();
         for(Order order : orders){
             orderResponses.add(getResponseOrder(order));
@@ -152,12 +181,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse cancelOrder(UUID orderId, UUID userId) {
-        //TODO: choose what to do based on user role,
+    public OrderResponse cancelOrder(UUID orderId) {
+        //choose what to do based on a user's role
         //only cancel before shipped
         Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
         if(!OrderStatus.canCancel(order.getOrderStatus())){
             throw new CancellationFailedException("cannot cancel an order that has already been shipped");
+        }
+        if(!hasRole("ADMIN")){
+            if(!order.getUser().getUserId().equals(SecurityUtil.getCurrentUserId())){
+                throw new PermissionDeniedException("cancel order");
+            }
         }
 
         if(order.getOrderStatus().equals(OrderStatus.CONFIRMED)){
@@ -193,6 +227,14 @@ public class OrderServiceImpl implements OrderService {
         }
         orderResponse.setItems(list);
         return orderResponse;
+    }
+
+    private boolean hasRole(String role) {
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_" + role));
     }
 
 }
