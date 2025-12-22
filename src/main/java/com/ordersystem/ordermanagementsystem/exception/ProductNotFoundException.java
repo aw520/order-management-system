@@ -2,6 +2,6 @@ package com.ordersystem.ordermanagementsystem.exception;
 
 public class ProductNotFoundException extends BusinessException{
     public ProductNotFoundException(String productId) {
-        super("Product not found: " + productId);
+        super("PRODUCT_NOT_FOUND", "Product not found: " + productId);
     }
 }
