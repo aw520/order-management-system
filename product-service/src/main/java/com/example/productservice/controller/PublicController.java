@@ -2,7 +2,7 @@ package com.example.productservice.controller;
 
 import com.example.productservice.response.GeneralResponse;
 import com.example.productservice.response.SearchProductListResponse;
-import com.example.productservice.response.SearchProductResponse;
+import com.example.productservice.response.SpecificProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class PublicController {
 
     @GetMapping("/{id}")
-    public ResponseEntity<GeneralResponse<SearchProductResponse>> getProductById(@PathVariable String id){
+    public ResponseEntity<GeneralResponse<SpecificProductResponse>> getProductById(@PathVariable String id){
         //TODO: can directly from the frontend
         //TODO: give all info about this specific product
         return null;

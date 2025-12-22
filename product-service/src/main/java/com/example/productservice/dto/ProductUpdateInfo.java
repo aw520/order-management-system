@@ -1,15 +1,18 @@
 package com.example.productservice.dto;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
+@Getter
 public class ProductUpdateInfo {
     @NotNull
-    private String id;
+    private UUID id;
     private String name;
     private String description;
     private String imageUrl;
-    private int quantity;
+    private Integer quantity;
     private BigDecimal price;
 }

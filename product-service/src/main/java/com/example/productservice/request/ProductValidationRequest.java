@@ -9,4 +9,6 @@ public class ProductValidationRequest {
     @NotNull
     @NotEmpty
     private List<RequestUpdateProduct> products;
+    @NotNull
+    private String idempotencyKey;
 }
