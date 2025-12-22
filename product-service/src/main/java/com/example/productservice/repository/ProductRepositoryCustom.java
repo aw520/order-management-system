@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductRepositoryCustom {
-    //TODO: search list of products based on criteria
-    List<Product> search(int page, int size, SearchCriteria criteria);
-    //TODO: update
+    //search list of products based on criteria
+    List<Product> search(SearchCriteria criteria);
+    //update
     int updateProductQuantity(UUID id, int delta);
 }

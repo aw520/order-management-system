@@ -1,14 +1,18 @@
 package com.example.productservice.dto;
 
+import com.example.productservice.constant.Sortable;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
+
+@Getter
 public class SearchCriteria {
     @NotNull
     int page;
     @NotNull
     int size;
-    String sort;
-    String direction;
+    Sortable sort;
+    Integer direction;
     String keyword;
     Boolean inStock;
 }

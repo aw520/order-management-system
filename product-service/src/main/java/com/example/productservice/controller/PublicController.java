@@ -22,7 +22,7 @@ public class PublicController {
     @GetMapping
     public ResponseEntity<GeneralResponse<SearchProductListResponse>> searchProduct(@RequestParam int page,
                                                                                     @RequestParam int size,
-                                                                                    @RequestParam(required = false) String name,
+                                                                                    @RequestParam(required = false) String keyword,
                                                                                     @RequestParam(required = false) Boolean inStock,
                                                                                     @RequestParam(required = false) String sortBy,
                                                                                     @RequestParam(required = false) Integer sortDirection){
