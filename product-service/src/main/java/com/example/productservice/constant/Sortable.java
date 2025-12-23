@@ -11,6 +11,18 @@ public enum Sortable {
         this.field = field;
     }
 
+    public static Sortable fromString(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        try {
+            return Sortable.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
     public String field() {
         return field;
     }

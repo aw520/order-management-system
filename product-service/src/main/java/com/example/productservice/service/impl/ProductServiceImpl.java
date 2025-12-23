@@ -6,12 +6,11 @@ import com.example.productservice.dto.SearchCriteria;
 import com.example.productservice.entity.IdempotencyRecord;
 import com.example.productservice.entity.Product;
 import com.example.productservice.exception.InvalidUpdateException;
-import com.example.productservice.exception.OutOfStockException;
 import com.example.productservice.exception.ProductNotFoundException;
 import com.example.productservice.repository.IdempotencyRecordRepository;
 import com.example.productservice.repository.ProductRepository;
 import com.example.productservice.repository.ProductRepositoryCustom;
-import com.example.productservice.request.RequestUpdateProduct;
+import com.example.productservice.request.IndividualProductValidationDTO;
 import com.example.productservice.response.*;
 import com.example.productservice.service.ProductService;
 import jakarta.transaction.Transactional;
@@ -70,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductValidationResponse validateProduct(
             UUID idempotencyKey,
-            List<RequestUpdateProduct> products
+            List<IndividualProductValidationDTO> products
     ) {
 
         // idempotency check
@@ -83,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
         boolean anyDeducted = false;
         boolean allFullyFulfilled = true;
 
-        for (RequestUpdateProduct request : products) {
+        for (IndividualProductValidationDTO request : products) {
 
             if (request.getDelta() >= 0) {
                 throw new InvalidUpdateException("Cannot increase quantity when placing order");

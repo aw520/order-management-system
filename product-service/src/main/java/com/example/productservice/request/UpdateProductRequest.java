@@ -1,12 +1,12 @@
 package com.example.productservice.request;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
-public class UpdateItemRequest {
-    @NotNull
-    private String id;
+@Getter
+public class UpdateProductRequest {
     private String name;
     private String description;
     private String imageUrl;
