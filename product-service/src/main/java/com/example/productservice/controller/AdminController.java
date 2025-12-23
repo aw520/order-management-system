@@ -24,7 +24,7 @@ public class AdminController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/updateProduct/{id}")
     public ResponseEntity<SpecificProductResponse> updateProduct(@PathVariable String id, @RequestBody UpdateProductRequest updateProductRequest){
-        //TODO: only manager allow to do this
+        //only manager allow to do this
         //return if success
         SpecificProductResponse response = productService.updateProduct(ProductUpdateInfo.builder()
                 .id(UUID.fromString(id))
