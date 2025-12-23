@@ -34,7 +34,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public SpecificProductResponse updateProduct(ProductUpdateInfo productUpdateInfo) {
-        //TODO: only manager allow to do this
         UUID id = productUpdateInfo.getId();
         Product product = productRepository.findById(id).orElseThrow(()-> new ProductNotFoundException(id.toString()));
         if(product!=null){
@@ -195,7 +194,7 @@ public class ProductServiceImpl implements ProductService {
     private GeneralSearchProductResponse productToGeneralSearchProductResponse(Product product){
         return GeneralSearchProductResponse.builder()
                 .id(product.getProductId().toString())
-                .name(product.toString())
+                .name(product.getProductName())
                 .imageUrl(product.getImageUrl())
                 .quantity(product.getQuantity())
                 .price(product.getProductPrice())

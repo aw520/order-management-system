@@ -1,14 +1,16 @@
 package com.example.productservice.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
 public class ProductUpdateInfo {
     @NotNull
     private UUID id;
