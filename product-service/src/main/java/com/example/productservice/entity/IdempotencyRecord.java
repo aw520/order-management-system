@@ -20,7 +20,6 @@ import java.util.UUID;
 public class IdempotencyRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID idempotencyKey;
 
     @JdbcTypeCode(SqlTypes.JSON)

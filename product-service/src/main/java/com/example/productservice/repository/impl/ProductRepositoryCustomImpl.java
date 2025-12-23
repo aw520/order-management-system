@@ -36,7 +36,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             String[] keywords = searchCriteria.getKeyword().toLowerCase().trim().split("\\s+");
             for(String keyword : keywords){
                 predicates.add(cb.like(
-                        cb.lower(root.get("name").as(String.class)), "%" + keyword + "%")
+                        cb.lower(root.get("productName").as(String.class)), "%" + keyword + "%")
                 );
             }
         }
