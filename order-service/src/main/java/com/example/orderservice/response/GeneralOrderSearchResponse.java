@@ -13,8 +13,8 @@ import java.util.UUID;
 @Builder
 @Getter
 public class GeneralOrderSearchResponse {
-    private UUID orderId;
-    private OrderStatus status;
+    private String orderId;
+    private String status;
     private BigDecimal totalPrice;
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;

@@ -124,6 +124,7 @@ public class ProductServiceImpl implements ProductService {
                             .productImageUrl(product.getImageUrl())
                             .requestedQuantity(requested)
                             .deductedQuantity(deducted)
+                            .unitPrice(product.getProductPrice())
                             .build()
             );
         }

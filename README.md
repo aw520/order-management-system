@@ -7,3 +7,4 @@
 
 - [ ] Add price quote expiration and validation
 - [ ] Use Kafka for messaging between order service and product service
+- [ ] Handle validation errors in order service, ensure product service is able to rollback

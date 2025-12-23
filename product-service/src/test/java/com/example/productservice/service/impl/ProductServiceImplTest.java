@@ -182,6 +182,7 @@ class ProductServiceImplTest {
         assertThat(resp.getProducts()).hasSize(1);
         assertThat(resp.getProducts().get(0).getRequestedQuantity()).isEqualTo(3);
         assertThat(resp.getProducts().get(0).getDeductedQuantity()).isEqualTo(3);
+        assertThat(resp.getProducts().get(0).getUnitPrice()).isEqualByComparingTo("9.99");
 
         verify(idempotencyRecordRepository).save(any(IdempotencyRecord.class));
     }

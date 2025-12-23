@@ -1,12 +1,16 @@
-package com.example.productservice.constant;
+package com.example.orderservice.constant;
 
 import lombok.Getter;
 
 @Getter
 public enum Sortable {
-    PRODUCT_NAME("productName"),
-    PRICE("productPrice"),
-    QUANTITY("quantity");
+    CLIENT_ID("client_id"),
+    CLIENT_NAME("client_name"),
+    ORDER_ID("order_id"),
+    ORDER_STATUS("order_status"),
+    CREATION_TIME("creation_time"),
+    LAST_UPDATE_TIME("last_update_time"),
+    TOTAL_PRICE("total_price");
 
     private final String field;
 
@@ -26,9 +30,4 @@ public enum Sortable {
         }
     }
 
-    public String field() {
-        return field;
-    }
 }
-
-

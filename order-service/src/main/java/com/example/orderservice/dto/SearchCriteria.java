@@ -1,8 +1,8 @@
 package com.example.orderservice.dto;
 
 import com.example.orderservice.constant.OrderStatus;
+import com.example.orderservice.constant.Sortable;
 import lombok.*;
-import org.hibernate.boot.model.source.spi.Sortable;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -18,8 +18,8 @@ public class SearchCriteria {
     @Builder.Default
     int size = 10;
     private UUID orderId;
-    private OrderStatus status;
     private UUID clientId;
+    private OrderStatus status;
     private ZonedDateTime createdAfter;
     private ZonedDateTime createdBefore;
     private ZonedDateTime updatedAfter;

@@ -1,8 +1,11 @@
 package com.example.orderservice.response;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 
-public class ProductOfOrder {
+@Builder
+public class ProductOfOrderResponse {
     private String id;
     private String name;
     private String imageUrl;

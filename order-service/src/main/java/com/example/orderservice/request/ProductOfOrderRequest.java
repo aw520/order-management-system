@@ -1,8 +1,10 @@
 package com.example.orderservice.request;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
-public class ProductOfOrder {
+@Getter
+public class ProductOfOrderRequest {
     @NotNull
     private String id;
     @NotNull

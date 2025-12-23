@@ -36,7 +36,7 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
-    private BigDecimal price;
+    private BigDecimal totalPrice;
 
     @NotNull
     private ZonedDateTime creationTime;

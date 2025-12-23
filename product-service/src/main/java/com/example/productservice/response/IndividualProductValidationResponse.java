@@ -2,6 +2,8 @@ package com.example.productservice.response;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -12,4 +14,5 @@ public class IndividualProductValidationResponse {
     private String productImageUrl;
     private int requestedQuantity;
     private int deductedQuantity;
+    private BigDecimal unitPrice;
 }

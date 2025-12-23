@@ -1,7 +1,10 @@
 package com.example.orderservice.request;
 
+import lombok.Getter;
+
 import java.time.ZonedDateTime;
 
+@Getter
 public class ClientOrderSearchRequest {
     private Integer page;
     private Integer size;

@@ -1,11 +1,15 @@
 package com.example.orderservice.request;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@Getter
+@Builder
 public class PlaceOrderRequest {
-    private List<ProductOfOrder> products;
+    private List<ProductOfOrderRequest> products;
     private String address;
-    private ZonedDateTime createdAt;
 }
 

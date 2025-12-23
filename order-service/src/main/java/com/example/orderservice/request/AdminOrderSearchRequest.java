@@ -2,11 +2,13 @@ package com.example.orderservice.request;
 
 import com.example.orderservice.constant.OrderStatus;
 import lombok.Builder;
+import lombok.Getter;
 import org.hibernate.boot.model.source.spi.Sortable;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+@Getter
 public class AdminOrderSearchRequest {
     private Integer page;
     private Integer size;

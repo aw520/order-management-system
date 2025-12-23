@@ -1,5 +1,6 @@
 package com.example.orderservice.service;
 
+import com.example.orderservice.dto.ProductValidationResponse;
 import com.example.orderservice.dto.SearchCriteria;
 import com.example.orderservice.request.PlaceOrderRequest;
 import com.example.orderservice.response.GeneralOrderSearchResponse;
@@ -13,6 +14,7 @@ public interface OrderService {
     List<GeneralOrderSearchResponse> searchOrder(SearchCriteria criteria);
     OrderResponse placeOrder(UUID clientId, PlaceOrderRequest request);
     OrderResponse updateOrderStatus(UUID orderId, String status);//admin only
-    OrderResponse getOrderById(UUID orderId);//need authorization
-    OrderResponse cancelOrder(UUID orderId);//need authorization
+    OrderResponse getOrderById(UUID orderId, boolean isAdmin, UUID userId);//need authorization
+    OrderResponse cancelOrder(UUID orderId, boolean isAdmin, UUID userId);//need authorization
+    void handleValidationResponse(UUID orderID, ProductValidationResponse response);
 }
