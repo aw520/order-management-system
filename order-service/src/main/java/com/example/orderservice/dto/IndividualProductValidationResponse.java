@@ -1,6 +1,9 @@
-package com.example.productservice.response;
+package com.example.orderservice.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Getter

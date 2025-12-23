@@ -1,4 +1,4 @@
-package com.example.productservice.request;
+package com.example.orderservice.dto;
 
 import lombok.Getter;
 import lombok.Setter;

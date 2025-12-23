@@ -1,4 +1,4 @@
-package com.example.productservice.request;
+package com.example.orderservice.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -1,4 +1,4 @@
-## Technical Debt & Future Improvements
+## Future Improvements
 
 - [ ] Introduce product price history in ProductService
     - Persist historical price records with effective timestamps
@@ -6,3 +6,4 @@
     - Orders will continue to store price snapshots (no recalculation)
 
 - [ ] Add price quote expiration and validation
+- [ ] Use Kafka for messaging between order service and product service

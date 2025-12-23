@@ -3,9 +3,7 @@ package com.example.orderservice.constant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -49,12 +47,12 @@ public enum OrderStatus {
         return null;
     }
 
-    public static boolean canCancel(OrderStatus status) {
-        return status == NEW || status == CONFIRMED || status == PARTIAL_CONFIRMED;
-    }
-
-    public static List<String> getAll() {
-        return Arrays.stream(OrderStatus.values()).map(OrderStatus::getValue).collect(Collectors.toList());
+    public boolean canUpdateTo(OrderStatus oldStatus, OrderStatus newStatus) {
+        HashMap<OrderStatus, HashSet<OrderStatus>> statusTransitionMap = new HashMap<>();
+        statusTransitionMap.put(NEW, new HashSet<>(Arrays.asList(CONFIRMED, PARTIAL_CONFIRMED, CANCELLED)));
+        statusTransitionMap.put(CONFIRMED, new HashSet<>(Arrays.asList(SHIPPED, CANCELLED)));
+        statusTransitionMap.put(PARTIAL_CONFIRMED, new HashSet<>(Arrays.asList(SHIPPED, CANCELLED)));
+        return statusTransitionMap.get(oldStatus).contains(newStatus);
     }
 }
 
