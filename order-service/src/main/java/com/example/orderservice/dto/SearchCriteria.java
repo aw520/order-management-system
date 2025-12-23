@@ -1,7 +1,6 @@
 package com.example.orderservice.dto;
 
 import com.example.orderservice.constant.OrderStatus;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.boot.model.source.spi.Sortable;
 
@@ -13,7 +12,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @ToString
-public class SearchCriteriaAdmin {
+public class SearchCriteria {
     @Builder.Default
     int page = 1;
     @Builder.Default
