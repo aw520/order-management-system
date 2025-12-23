@@ -30,8 +30,8 @@ public class PublicController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GeneralSearchProductResponse>> searchProduct(@RequestParam int page,
-                                                                                    @RequestParam int size,
+    public ResponseEntity<List<GeneralSearchProductResponse>> searchProduct(@RequestParam(required = false)  Integer page,
+                                                                                    @RequestParam(required = false)  Integer size,
                                                                                     @RequestParam(required = false) String keyword,
                                                                                     @RequestParam(required = false) Boolean inStock,
                                                                                     @RequestParam(required = false) String sortBy,

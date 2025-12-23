@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchCriteria {
-    @NotNull
-    int page;
-    @NotNull
-    int size;
+    @Builder.Default
+    int page = 1;
+    @Builder.Default
+    int size = 10;
     Sortable sort;
     Integer direction;
     String keyword;
