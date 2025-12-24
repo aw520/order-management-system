@@ -110,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse updateOrderStatus(UUID orderId, String status) {
         Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
         OrderStatus newStatus = OrderStatus.getFromValue(status);
-        if(order.getOrderStatus().canUpdateTo(order.getOrderStatus(), newStatus)){
+        if(OrderStatus.canUpdateTo(order.getOrderStatus(), newStatus)){
             order.setOrderStatus(newStatus);
             order.setLastUpdateTime(ZonedDateTime.now());
             orderRepository.save(order);

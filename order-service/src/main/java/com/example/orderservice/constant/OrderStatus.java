@@ -46,11 +46,14 @@ public enum OrderStatus {
         return null;
     }
 
-    public boolean canUpdateTo(OrderStatus oldStatus, OrderStatus newStatus) {
+    public static boolean canUpdateTo(OrderStatus oldStatus, OrderStatus newStatus) {
         HashMap<OrderStatus, HashSet<OrderStatus>> statusTransitionMap = new HashMap<>();
         statusTransitionMap.put(NEW, new HashSet<>(Arrays.asList(CONFIRMED, PARTIAL_CONFIRMED, CANCELLED)));
         statusTransitionMap.put(CONFIRMED, new HashSet<>(Arrays.asList(SHIPPED, CANCELLED)));
         statusTransitionMap.put(PARTIAL_CONFIRMED, new HashSet<>(Arrays.asList(SHIPPED, CANCELLED)));
+        if(!statusTransitionMap.containsKey(oldStatus)){
+            return false;
+        }
         return statusTransitionMap.get(oldStatus).contains(newStatus);
     }
 }

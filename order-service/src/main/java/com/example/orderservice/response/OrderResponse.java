@@ -6,11 +6,10 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-@Builder
-@RequiredArgsConstructor
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Setter
+@Getter
+@Builder
 public class OrderResponse {
     private String orderId;
     private String status;

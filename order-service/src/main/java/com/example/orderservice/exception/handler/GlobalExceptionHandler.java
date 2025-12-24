@@ -1,6 +1,6 @@
-package com.example.productservice.exception.handler;
+package com.example.orderservice.exception.handler;
 
-import com.example.productservice.exception.BusinessException;
+import com.example.orderservice.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -48,4 +48,3 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error" + ex.getMessage());
     }
 }
-

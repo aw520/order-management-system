@@ -31,7 +31,9 @@ public class ClientController {
         SearchCriteria criteria = SearchCriteria.builder()
                 .page(request.getPage())
                 .size(request.getSize())
-                .orderId(UUID.fromString(request.getOrderId()))
+                .orderId(request.getOrderId() != null
+                        ? UUID.fromString(request.getOrderId())
+                        : null)
                 .clientId(clientId)
                 .status(OrderStatus.getFromValue(request.getStatus()))
                 .createdAfter(request.getCreatedAfter())
@@ -70,5 +72,6 @@ public class ClientController {
         OrderResponse response = orderService.cancelOrder(UUID.fromString(orderId), false, clientId);
         return ResponseEntity.ok(response);
     }
+
 
 }

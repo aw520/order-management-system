@@ -4,13 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum Sortable {
-    CLIENT_ID("client_id"),
-    CLIENT_NAME("client_name"),
-    ORDER_ID("order_id"),
-    ORDER_STATUS("order_status"),
-    CREATION_TIME("creation_time"),
-    LAST_UPDATE_TIME("last_update_time"),
-    TOTAL_PRICE("total_price");
+    CLIENT_ID("clientId"),
+    CLIENT_NAME("clientName"),
+    ORDER_ID("orderId"),
+    ORDER_STATUS("orderStatus"),
+    CREATION_TIME("creationTime"),
+    LAST_UPDATE_TIME("lastUpdateTime"),
+    TOTAL_PRICE("totalPrice");
 
     private final String field;
 
