@@ -11,3 +11,5 @@
 
 **/order-service/src/main/resources/application-dev.yml
 **/product-service/src/main/resources/application-dev.yml
+**/user-service/src/main/resources/application-dev.yml
+
