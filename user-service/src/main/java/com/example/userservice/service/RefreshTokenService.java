@@ -9,5 +9,7 @@ public interface RefreshTokenService {
     UUID validateAndGetUserId(String refreshToken);
 
     void revoke(String refreshToken);
+
+    void revokeAll(UUID userId);
 }
 

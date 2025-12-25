@@ -5,12 +5,13 @@ import com.example.userservice.entity.User;
 import com.example.userservice.exception.*;
 import com.example.userservice.repository.UserRepository;
 import com.example.userservice.request.RegistrationRequest;
-import com.example.userservice.response.UserLoginResponse;
+import com.example.userservice.response.UserAuthResponse;
 import com.example.userservice.response.UserProfileResponse;
 import com.example.userservice.security.jwt.JwtProvider;
 import com.example.userservice.service.AuthService;
 import com.example.userservice.service.RefreshTokenService;
 import com.example.userservice.service.ServiceUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.passay.PasswordData;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenService refreshTokenService;
 
     @Override
+    @Transactional
     public UserProfileResponse registration(RegistrationRequest request) {
         String email = request.getEmail();
         String rawPassword = request.getPassword();
@@ -62,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserLoginResponse login(String email, String password) {
+    public UserAuthResponse login(String email, String password) {
         //validate email
         if(!emailValidator.isValid(email)){
             throw new InvalidEmailException(email);
@@ -74,9 +77,10 @@ public class AuthServiceImpl implements AuthService {
 
         //validate password
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            //throw new InvalidCredentialException("Password is incorrect");
-            throw new RuntimeException("TEST_RUNTIME_EXCEPTION");
+            throw new InvalidCredentialException("Password is incorrect");
+            //throw new RuntimeException("TEST_RUNTIME_EXCEPTION");
         }
+        System.out.println("Hibernate thinks ID is: " + user.getUserId().toString());
         //access token
         String accessToken = jwtProvider.generateAccessToken(
                 user.getUserId(),
@@ -85,6 +89,43 @@ public class AuthServiceImpl implements AuthService {
         );
         //refresh token
         String refreshToken = refreshTokenService.createRefreshToken(user.getUserId());
-        return ServiceUtil.userToUserLoginResponse(user, accessToken, refreshToken);
+        return ServiceUtil.userToUserAuthResponse(user, accessToken, refreshToken);
     }
+
+    @Override
+    public UserAuthResponse refreshToken(String refreshToken) {
+
+        try {
+            UUID userId = refreshTokenService.validateAndGetUserId(refreshToken);
+
+            refreshTokenService.revoke(refreshToken);
+
+            User user = userRepository.findByUserId(userId)
+                    .orElseThrow(() ->
+                            new UserNotFoundException(
+                                    "User with id " + userId + " is not found"
+                            ));
+
+            String newAccessToken =
+                    jwtProvider.generateAccessToken(
+                            userId,
+                            user.getEmail(),
+                            user.getRoles()
+                    );
+
+            String newRefreshToken =
+                    refreshTokenService.createRefreshToken(userId);
+
+            return ServiceUtil.userToUserAuthResponse(
+                    user,
+                    newAccessToken,
+                    newRefreshToken
+            );
+
+        } catch (ReusedTokenException e) {
+            refreshTokenService.revokeAll(e.getUserId());
+            throw e;
+        }
+    }
+
 }

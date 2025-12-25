@@ -1,9 +1,9 @@
 package com.example.userservice.controller;
 
-import com.example.userservice.request.PasswordUpdateRequest;
+import com.example.userservice.request.RefreshAuthRequest;
 import com.example.userservice.request.RegistrationRequest;
 import com.example.userservice.request.UserLoginRequest;
-import com.example.userservice.response.UserLoginResponse;
+import com.example.userservice.response.UserAuthResponse;
 import com.example.userservice.response.UserProfileResponse;
 import com.example.userservice.service.AuthService;
 import jakarta.validation.Valid;
@@ -24,17 +24,25 @@ public class AuthController {
     //TODO: Registration
     @PostMapping("/register")
     public ResponseEntity<UserProfileResponse> register(@RequestBody @Valid RegistrationRequest request){
-        return null;
+        return ResponseEntity.ok(authService.registration(request));
     }
 
 
     //TODO: LogIn, JWT issuance
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request){
+    public ResponseEntity<UserAuthResponse> login(@RequestBody UserLoginRequest request){
         //System.out.println("Login HIT");
-        UserLoginResponse response = authService.login(request.getEmail(), request.getPassword());
+        UserAuthResponse response = authService.login(request.getEmail(), request.getPassword());
         return ResponseEntity.ok(response);
     }
+
+    //TODO: newJWT
+    @PostMapping("/refresh")
+    public ResponseEntity<UserAuthResponse> refresh(@RequestBody RefreshAuthRequest request){
+        UserAuthResponse userAuthResponse = authService.refreshToken(request.getRefreshToken());
+        return ResponseEntity.ok(userAuthResponse);
+    }
+
 
 
 

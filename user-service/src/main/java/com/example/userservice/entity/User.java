@@ -5,8 +5,10 @@ import com.example.userservice.converter.UserRoleConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
 
+import java.sql.Types;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,7 +24,8 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", length = 36)
+    @Column(name = "user_id", columnDefinition = "BINARY(16)", nullable = false, updatable = false)
+    @JdbcTypeCode(Types.BINARY)
     private UUID userId;
 
     private String firstName;

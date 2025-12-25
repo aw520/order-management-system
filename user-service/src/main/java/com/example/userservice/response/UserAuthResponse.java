@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Builder
 @Getter
-public class UserLoginResponse {
+public class UserAuthResponse {
     private String accessToken;
     private String refreshToken;
     private String email;

@@ -57,4 +57,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error" + ex.getMessage());
     }
+
+    //TODO: for invalid refresh token,
+
+    //TODO: for reused refresh token, revoke all token with corresponding user
 }

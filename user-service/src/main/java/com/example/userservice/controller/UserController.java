@@ -4,6 +4,7 @@ import com.example.userservice.request.PasswordUpdateRequest;
 import com.example.userservice.response.UserProfileResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,15 +15,20 @@ public class UserController {
     //Everything below require authentication first;
     //TODO: password update
     @PostMapping("/update-password")
-    public ResponseEntity<Void> updatePassword(@RequestBody @Valid PasswordUpdateRequest request){
+    public ResponseEntity<String> updatePassword(@RequestBody @Valid PasswordUpdateRequest request,
+                                                 Authentication authentication){
         return null;
     }
 
     //TODO: other information update
     @PostMapping("/account-update")
-    public ResponseEntity<UserProfileResponse> updateAccount(@RequestBody @Valid UserProfileResponse request){
+    public ResponseEntity<UserProfileResponse> updateAccount(@RequestBody @Valid UserProfileResponse request,
+                                                             Authentication authentication){
         return null;
     }
+
     //TODO: password reset
-    //TODO: Refresh token
+
+
+    //TODO: check self profile
 }
