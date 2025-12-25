@@ -9,7 +9,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum UserRole {
     
-    CLIENT("Client", 0), ADMIN("Admin", 1);
+    ROOT("Root", -1), CLIENT("Client", 0), ADMIN("Admin", 1);
     
     private final String name;
     private final Integer dbValue;

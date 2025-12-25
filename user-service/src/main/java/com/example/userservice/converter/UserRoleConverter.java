@@ -4,16 +4,32 @@ import com.example.userservice.constant.UserRole;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Converter(autoApply = true)
-public class UserRoleConverter implements AttributeConverter<UserRole, Integer>{
+public class UserRoleConverter implements AttributeConverter<Set<UserRole>, String>{
 
     @Override
-    public Integer convertToDatabaseColumn(UserRole role) {
-        return role == null ? null : role.getDbValue();
+    public String convertToDatabaseColumn(Set<UserRole> roles) {
+        if (roles == null || roles.isEmpty()) {
+            return "";
+        }
+        return roles.stream()
+                .map(Enum::name)
+                .collect(Collectors.joining(","));
     }
 
     @Override
-    public UserRole convertToEntityAttribute(Integer dbValue) {
-        return UserRole.intToRole(dbValue);
+    public Set<UserRole> convertToEntityAttribute(String dbData) {
+        if (dbData == null || dbData.isBlank()) {
+            return Set.of();   // 👈 VERY IMPORTANT (never null)
+        }
+
+        return Arrays.stream(dbData.split(","))
+                .map(String::trim)
+                .map(UserRole::valueOf)
+                .collect(Collectors.toSet());
     }
 }

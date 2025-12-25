@@ -7,10 +7,10 @@ import java.util.Set;
 
 @Builder
 @Getter
-public class UserProfileResponse {
+public class UserLoginResponse {
+    private String accessToken;
+    private String refreshToken;
     private String email;
-    private String firstName;
-    private String lastName;
-    private String address;
+    private String userId;
     private Set<String> roles;
 }

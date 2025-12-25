@@ -4,11 +4,21 @@ spring:
     username: root
     password: 001128Laika
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
 
-  product:
-    service:
-      url: http://localhost:8081
+product:
+  service:
+    url: http://localhost:8081
+
+security:
+  jwt:
+    secret: dev-secret-0123456789-abcdefghijklmnopqrstuvwxyz
+    access-token-expiration-minutes: 15

@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@PreAuthorize("hasAnyRole('ADMIN')")
-@RequestMapping("/admin")
-public class AdminController {
+@PreAuthorize("hasAnyRole('ROOT')")
+@RequestMapping("/root")
+public class RootController {
 
     //TODO: change roles for other users
     @PostMapping("/change-role")

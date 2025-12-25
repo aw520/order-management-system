@@ -2,13 +2,14 @@ package com.example.userservice.service.impl;
 
 import com.example.userservice.constant.UserRole;
 import com.example.userservice.entity.User;
-import com.example.userservice.exception.InvalidEmailException;
-import com.example.userservice.exception.InvalidPasswordException;
-import com.example.userservice.exception.UserAlreadyExistsException;
+import com.example.userservice.exception.*;
 import com.example.userservice.repository.UserRepository;
 import com.example.userservice.request.RegistrationRequest;
+import com.example.userservice.response.UserLoginResponse;
 import com.example.userservice.response.UserProfileResponse;
+import com.example.userservice.security.jwt.JwtProvider;
 import com.example.userservice.service.AuthService;
+import com.example.userservice.service.RefreshTokenService;
 import com.example.userservice.service.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -29,6 +30,8 @@ public class AuthServiceImpl implements AuthService {
     private final EmailValidator emailValidator;
     private final PasswordValidator passwordValidator;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public UserProfileResponse registration(RegistrationRequest request) {
@@ -58,4 +61,30 @@ public class AuthServiceImpl implements AuthService {
         return ServiceUtil.userToUserProfileResponse(user);
     }
 
+    @Override
+    public UserLoginResponse login(String email, String password) {
+        //validate email
+        if(!emailValidator.isValid(email)){
+            throw new InvalidEmailException(email);
+        }
+        //find user by email
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->
+                        new UserNotFoundException(">" + email + "< is not found in database"));
+
+        //validate password
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            //throw new InvalidCredentialException("Password is incorrect");
+            throw new RuntimeException("TEST_RUNTIME_EXCEPTION");
+        }
+        //access token
+        String accessToken = jwtProvider.generateAccessToken(
+                user.getUserId(),
+                user.getEmail(),
+                user.getRoles()
+        );
+        //refresh token
+        String refreshToken = refreshTokenService.createRefreshToken(user.getUserId());
+        return ServiceUtil.userToUserLoginResponse(user, accessToken, refreshToken);
+    }
 }
