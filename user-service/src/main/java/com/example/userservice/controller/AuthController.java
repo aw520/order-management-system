@@ -21,14 +21,14 @@ public class AuthController {
 
     private final AuthService authService;
 
-    //TODO: Registration
+    //Registration
     @PostMapping("/register")
     public ResponseEntity<UserProfileResponse> register(@RequestBody @Valid RegistrationRequest request){
         return ResponseEntity.ok(authService.registration(request));
     }
 
 
-    //TODO: LogIn, JWT issuance
+    //LogIn, JWT issuance
     @PostMapping("/login")
     public ResponseEntity<UserAuthResponse> login(@RequestBody UserLoginRequest request){
         //System.out.println("Login HIT");
@@ -36,7 +36,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    //TODO: newJWT
+    // newJWT
     @PostMapping("/refresh")
     public ResponseEntity<UserAuthResponse> refresh(@RequestBody RefreshAuthRequest request){
         UserAuthResponse userAuthResponse = authService.refreshToken(request.getRefreshToken());

@@ -64,6 +64,33 @@ public class AuthServiceImpl implements AuthService {
         return ServiceUtil.userToUserProfileResponse(user);
     }
 
+    @Transactional
+    @Override
+    public void updateUserPassword(UUID userId, String oldPassword, String newPassword) {
+
+        User user = userRepository.findByUserId(userId).orElseThrow(
+                ()-> new UserNotFoundException("User with id: "+userId.toString()+" not found in database"));
+
+        //verify old password
+        if(!passwordEncoder.matches(oldPassword, user.getPassword())){
+            throw new InvalidCredentialException("Old password is incorrect");
+        }
+
+        //validate new password
+        RuleResult ruleResult = passwordValidator.validate(new PasswordData(newPassword));
+        if(!ruleResult.isValid()){
+            throw new InvalidPasswordException(String.join(
+                    ", ",
+                    passwordValidator.getMessages(ruleResult)
+            ));
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        //log user out
+        refreshTokenService.revokeAll(userId);
+    }
+
     @Override
     public UserAuthResponse login(String email, String password) {
         //validate email
@@ -80,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidCredentialException("Password is incorrect");
             //throw new RuntimeException("TEST_RUNTIME_EXCEPTION");
         }
-        System.out.println("Hibernate thinks ID is: " + user.getUserId().toString());
+        //System.out.println("Hibernate thinks ID is: " + user.getUserId().toString());
         //access token
         String accessToken = jwtProvider.generateAccessToken(
                 user.getUserId(),
