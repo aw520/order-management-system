@@ -1,6 +1,7 @@
 package com.example.userservice.controller;
 
 import com.example.userservice.request.PasswordUpdateRequest;
+import com.example.userservice.request.UserProfileUpdateRequest;
 import com.example.userservice.response.UserProfileResponse;
 import com.example.userservice.service.AuthService;
 import com.example.userservice.service.UserProfileService;
@@ -31,10 +32,12 @@ public class UserController {
     }
 
     //TODO: other information update
-    @PostMapping("/account-update")
-    public ResponseEntity<UserProfileResponse> updateAccount(@RequestBody @Valid UserProfileResponse request,
+    @PostMapping("/profile-update")
+    public ResponseEntity<UserProfileResponse> updateAccount(@RequestBody @Valid UserProfileUpdateRequest request,
                                                              Authentication authentication){
-        return null;
+        UUID userId = UUID.fromString(authentication.getName());
+        UserProfileResponse response = userProfileService.updateUserProfile(userId, userId, request);
+        return ResponseEntity.ok(response);
     }
 
     //TODO: check self profile
