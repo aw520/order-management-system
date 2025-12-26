@@ -23,6 +23,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserProfileResponse updateUserProfile(UUID userId, UUID targetUserId, UserProfileUpdateRequest request) {
         User actingUser = userRepository.findByUserId(userId).orElseThrow(()-> new UserNotFoundException("User with id: "+userId.toString()+" not found in database"));
         User targetUser = userRepository.findByUserId(targetUserId).orElseThrow(()-> new UserNotFoundException("User with id: "+targetUserId.toString()+" not found in database"));
@@ -43,6 +44,9 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     public UserProfileResponse getUserProfile(UUID userId) {
-        return null;
+        User user = userRepository.findByUserId(userId).orElseThrow(()-> new UserNotFoundException("User with id: "+userId.toString()+" not found in database"));
+        return ServiceUtil.userToUserProfileResponse(user);
     }
+
+
 }

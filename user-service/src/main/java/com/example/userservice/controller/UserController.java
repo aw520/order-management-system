@@ -22,7 +22,7 @@ public class UserController {
     private final UserProfileService userProfileService;
 
     //Everything below require authentication first;
-    //TODO: password update
+    //password update
     @PatchMapping("/update-password")
     public ResponseEntity<String> updatePassword(@RequestBody @Valid PasswordUpdateRequest request,
                                                  Authentication authentication){
@@ -31,7 +31,7 @@ public class UserController {
         return ResponseEntity.ok("Password updated successfully");
     }
 
-    //TODO: other information update
+    //other information update
     @PostMapping("/profile-update")
     public ResponseEntity<UserProfileResponse> updateAccount(@RequestBody @Valid UserProfileUpdateRequest request,
                                                              Authentication authentication){
@@ -40,9 +40,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    //TODO: check self profile
+    //check self profile
     @GetMapping
     public ResponseEntity<UserProfileResponse> getProfile(Authentication authentication){
-        return null;
+        UserProfileResponse response = userProfileService.getUserProfile(UUID.fromString(authentication.getName()));
+        return ResponseEntity.ok(response);
     }
+
+
 }

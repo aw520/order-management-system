@@ -11,4 +11,5 @@ public interface AuthService {
     UserAuthResponse login(String email, String password);
     UserAuthResponse refreshToken(String refreshToken);
     void updateUserPassword(UUID userId, String oldPassword, String newPassword);
+    void logout(UUID userId);
 }
