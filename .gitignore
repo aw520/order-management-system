@@ -1,0 +1,20 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Ignored default folder with query files
+/queries/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+
+**/order-service/src/main/resources/*
+**/product-service/src/main/resources/*
+**/user-service/src/main/resources/*
+!**/order-service/src/main/resources/application.yml
+!**/product-service/src/main/resources/application.yml
+!**/user-service/src/main/resources/application.yml
+.idea/
+
+
