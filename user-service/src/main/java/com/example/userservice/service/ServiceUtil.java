@@ -9,19 +9,37 @@ import java.util.stream.Collectors;
 
 public class ServiceUtil {
 
-    public static UserProfileResponse userToUserProfileResponse(User user) {
+    public static UserProfileResponse userToUserProfileResponseComplete(User user) {
         Set<String> roles = user.getRoles()
                 .stream()
                 .map(Enum::name)
                 .collect(Collectors.toSet());
-
-        return UserProfileResponse.builder()
+        //complete profile
+        UserProfileResponse response = UserProfileResponse.builder()
+                .userId(user.getUserId().toString())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .address(user.getAddress())
                 .roles(roles)
                 .build();
+        return response;
+    }
+
+    public static UserProfileResponse userToUserProfileResponseBasic(User user) {
+        Set<String> roles = user.getRoles()
+                .stream()
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+        //basic profile
+        UserProfileResponse response = UserProfileResponse.builder()
+                .userId(user.getUserId().toString())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .roles(roles)
+                .build();
+        return response;
     }
 
     public static UserAuthResponse userToUserAuthResponse(User user, String accessToken, String refreshToken) {
@@ -37,4 +55,5 @@ public class ServiceUtil {
                 .roles(roles)
                 .build();
     }
+
 }

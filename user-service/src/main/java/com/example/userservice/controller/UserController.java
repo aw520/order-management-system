@@ -8,6 +8,8 @@ import com.example.userservice.service.UserProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +45,9 @@ public class UserController {
     //check self profile
     @GetMapping
     public ResponseEntity<UserProfileResponse> getProfile(Authentication authentication){
-        UserProfileResponse response = userProfileService.getUserProfile(UUID.fromString(authentication.getName()));
+        UserProfileResponse response = userProfileService.getUserProfile(
+                UUID.fromString(authentication.getName()),
+                UUID.fromString(authentication.getName()));
         return ResponseEntity.ok(response);
     }
 

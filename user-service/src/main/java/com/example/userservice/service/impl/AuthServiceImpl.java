@@ -60,8 +60,9 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(rawPassword))
                 .roles(new HashSet<>(Arrays.asList(UserRole.CLIENT)))
                 .build();
+        user = userRepository.save(user);
 
-        return ServiceUtil.userToUserProfileResponse(user);
+        return ServiceUtil.userToUserProfileResponseComplete(user);
     }
 
     @Transactional

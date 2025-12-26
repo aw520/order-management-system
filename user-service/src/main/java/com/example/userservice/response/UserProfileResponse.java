@@ -8,6 +8,7 @@ import java.util.Set;
 @Builder
 @Getter
 public class UserProfileResponse {
+    private String userId;
     private String email;
     private String firstName;
     private String lastName;

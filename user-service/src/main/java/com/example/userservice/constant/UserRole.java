@@ -2,6 +2,7 @@ package com.example.userservice.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.security.core.parameters.P;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -52,5 +53,25 @@ public enum UserRole {
             }
         }
         return userRoles;
+    }
+
+    public static boolean ableToFetchUser(Set<UserRole> actuser, Set<UserRole> targetuser) {
+        if(actuser.contains(ROOT)){
+            return true;
+        }
+        if(actuser.contains(ADMIN) && !(targetuser.contains(ADMIN)||targetuser.contains(ROOT))){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean ableToEditUser(Set<UserRole> actuser, Set<UserRole> targetuser) {
+        if(actuser.contains(ROOT)){
+            return true;
+        }
+        if(actuser.contains(ADMIN) && !(targetuser.contains(ADMIN)||targetuser.contains(ROOT))){
+            return true;
+        }
+        return false;
     }
 }
