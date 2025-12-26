@@ -3,7 +3,9 @@ package com.example.userservice.constant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
@@ -39,5 +41,16 @@ public enum UserRole {
         }
 
         return null;
+    }
+
+    public static Set<UserRole> getRolesFromNameSet(Set<String> roles) {
+        Set<UserRole> userRoles = new HashSet<>();
+        for(String role: roles) {
+            UserRole userRole = nameToRole(role);
+            if(userRole != null) {
+                userRoles.add(userRole);
+            }
+        }
+        return userRoles;
     }
 }

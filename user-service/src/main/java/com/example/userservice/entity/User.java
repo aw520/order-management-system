@@ -1,7 +1,7 @@
 package com.example.userservice.entity;
 
 import com.example.userservice.constant.UserRole;
-import com.example.userservice.converter.UserRoleConverter;
+import com.example.userservice.constant.converter.UserRoleConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;

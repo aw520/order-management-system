@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -48,5 +49,19 @@ public class UserProfileServiceImpl implements UserProfileService {
         return ServiceUtil.userToUserProfileResponse(user);
     }
 
-
+    @Override
+    @Transactional
+    public UserProfileResponse updateUserRoles(UUID userId, UUID targetUserId, Set<String> role) {
+        User actingUser = userRepository.findByUserId(userId).orElseThrow(()-> new UserNotFoundException("User with id: "+userId.toString()+" not found in database"));
+        User targetUser = userRepository.findByUserId(targetUserId).orElseThrow(()-> new UserNotFoundException("User with id: "+targetUserId.toString()+" not found in database"));
+        //only root user allow to update others role
+        if(!actingUser.getRoles().contains(UserRole.ROOT)){
+            throw new AuthorizationException("You are not authorized to update this user's role");
+        }
+        Set<UserRole> roles = UserRole.getRolesFromNameSet(role);
+        targetUser.setRoles(roles);
+        userRepository.save(targetUser);
+        UserProfileResponse response = ServiceUtil.userToUserProfileResponse(targetUser);
+        return response;
+    }
 }

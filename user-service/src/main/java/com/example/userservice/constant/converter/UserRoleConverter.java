@@ -1,4 +1,4 @@
-package com.example.userservice.converter;
+package com.example.userservice.constant.converter;
 
 import com.example.userservice.constant.UserRole;
 import jakarta.persistence.AttributeConverter;
@@ -24,7 +24,7 @@ public class UserRoleConverter implements AttributeConverter<Set<UserRole>, Stri
     @Override
     public Set<UserRole> convertToEntityAttribute(String dbData) {
         if (dbData == null || dbData.isBlank()) {
-            return Set.of();   // 👈 VERY IMPORTANT (never null)
+            return Set.of();
         }
 
         return Arrays.stream(dbData.split(","))
