@@ -24,7 +24,7 @@ public class ClientController {
     private final OrderService orderService;
 
     //Client can check their own orders
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<List<GeneralOrderSearchResponse>> searchOrder(@RequestBody ClientOrderSearchRequest request,
                                                                         Authentication authentication){
         UUID clientId = UUID.fromString(authentication.getName());

@@ -27,7 +27,7 @@ public class AdminController {
     private final OrderService orderService;
 
     //Admin can search anyone's order
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<List<GeneralOrderSearchResponse>> searchOrder(@RequestBody AdminOrderSearchRequest request){
         SearchCriteria criteria = SearchCriteria.builder()
                 .page(request.getPage())

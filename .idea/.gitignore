@@ -9,7 +9,11 @@
 # Editor-based HTTP Client requests
 /httpRequests/
 
-**/order-service/src/main/resources/application-dev.yml
-**/product-service/src/main/resources/application-dev.yml
-**/user-service/src/main/resources/application-dev.yml
+**/order-service/src/main/resources/*
+**/product-service/src/main/resources/*
+**/user-service/src/main/resources/*
+!**/order-service/src/main/resources/application.yml
+!**/product-service/src/main/resources/application.yml
+!**/user-service/src/main/resources/application.yml
+
 

@@ -10,3 +10,4 @@
 - [ ] Handle validation errors in order service, ensure product service is able to rollback
 - [ ] Add blob storage for product images
 - [ ] Add log monitoring
+- [ ] OAuth2 authentication

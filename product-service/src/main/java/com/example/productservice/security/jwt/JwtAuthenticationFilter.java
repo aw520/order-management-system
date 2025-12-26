@@ -1,4 +1,4 @@
-package com.example.orderservice.security.jwt;
+package com.example.productservice.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

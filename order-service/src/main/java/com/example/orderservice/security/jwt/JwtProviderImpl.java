@@ -1,7 +1,5 @@
-package com.example.userservice.security.jwt;
+package com.example.orderservice.security.jwt;
 
-import com.example.userservice.constant.UserRole;
-import com.example.userservice.security.jwt.JwtProvider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,23 +22,6 @@ public class JwtProviderImpl implements JwtProvider {
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMillis = expirationMinutes * 60 * 1000;
-    }
-
-    @Override
-    public String generateAccessToken(UUID userId, String email, Set<UserRole> roles) {
-
-        Instant now = Instant.now();
-
-        return Jwts.builder()
-                .setSubject(userId.toString())                 // sub
-                .claim("email", email)
-                .claim("roles", roles.stream()
-                        .map(Enum::name)
-                        .toList())
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plusMillis(expirationMillis)))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
     }
 
     @Override

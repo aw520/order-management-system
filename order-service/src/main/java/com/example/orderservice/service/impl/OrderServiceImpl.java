@@ -97,6 +97,7 @@ public class OrderServiceImpl implements OrderService {
                     .unitPrice(orderProduct.getUnitPrice())
                     .totalPrice(order.getTotalPrice())
                     .build();
+            productOfOrderResponses.add(product);
         }
         response.setProducts(productOfOrderResponses);
 

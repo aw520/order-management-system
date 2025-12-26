@@ -1,6 +1,4 @@
-package com.example.orderservice.security.jwt;
-
-import com.example.userservice.constant.UserRole;
+package com.example.productservice.security.jwt;
 
 import java.util.Set;
 import java.util.UUID;
