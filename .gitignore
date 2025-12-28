@@ -16,5 +16,7 @@
 !**/product-service/src/main/resources/application.yml
 !**/user-service/src/main/resources/application.yml
 .idea/
-
+.env
+*.key
+.dockerignore
 

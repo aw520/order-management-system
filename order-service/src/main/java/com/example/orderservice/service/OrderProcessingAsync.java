@@ -11,6 +11,8 @@ import com.example.orderservice.request.PlaceOrderRequest;
 import com.example.orderservice.request.ProductOfOrderRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +22,29 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class OrderProcessingAsync {
 
     private final ProductClient productClient;
-    private final OrderService orderService;
     private final IdempotencyRecordRepository idempotencyRecordRepository;
+
+    @Autowired
+    public OrderProcessingAsync(ProductClient productClient, IdempotencyRecordRepository idempotencyRecordRepository) {
+        this.idempotencyRecordRepository = idempotencyRecordRepository;
+        this.productClient = productClient;
+    }
+
+    private OrderService orderService;
+
+    @Autowired
+    public void setOrderService (@Lazy OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    public OrderService getOrderService() {
+        return orderService;
+    }
+
+
 
     @Async
     @Transactional

@@ -1,0 +1,11 @@
+# Never send secrets to any Docker build
+secrets/
+**/*.key
+**/*.pem
+**/*.crt
+
+# Usual junk
+.git
+.idea
+target
+node_modules

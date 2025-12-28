@@ -18,6 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
+.idea/
 
 ### NetBeans ###
 /nbproject/private/
@@ -34,4 +35,5 @@ build/
 
 # Spring Boot secrets
 application-dev.yml
-.env
+../.env
+

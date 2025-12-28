@@ -17,7 +17,8 @@ public class SearchCriteria {
     @Builder.Default
     int size = 10;
     Sortable sort;
-    Integer direction;
+    @Builder.Default
+    boolean descending = true;
     String keyword;
     Boolean inStock;
 }

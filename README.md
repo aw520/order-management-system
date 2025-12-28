@@ -11,3 +11,6 @@
 - [ ] Add blob storage for product images
 - [ ] Add log monitoring
 - [ ] OAuth2 authentication
+- [ ] Flyway database migrations
+## TODO:
+- [ ] Order service generate jwt when communicate with product service

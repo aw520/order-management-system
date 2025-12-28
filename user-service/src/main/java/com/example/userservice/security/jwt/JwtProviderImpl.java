@@ -1,28 +1,39 @@
 package com.example.userservice.security.jwt;
 
 import com.example.userservice.constant.UserRole;
-import com.example.userservice.security.jwt.JwtProvider;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
+
 
 @Component
 public class JwtProviderImpl implements JwtProvider {
 
-    private final SecretKey secretKey;
+    private final PrivateKey privateKey;
     private final long expirationMillis;
 
     public JwtProviderImpl(
-            @Value("${security.jwt.secret}") String secret,
+            @Value("${security.jwt.private-key}") Resource privateKeyResource,
             @Value("${security.jwt.access-token-expiration-minutes}") long expirationMinutes
     ) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        try {
+            this.privateKey = loadPrivateKey(privateKeyResource);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to load private key", e);
+        }
         this.expirationMillis = expirationMinutes * 60 * 1000;
     }
 
@@ -32,47 +43,27 @@ public class JwtProviderImpl implements JwtProvider {
         Instant now = Instant.now();
 
         return Jwts.builder()
-                .setSubject(userId.toString())                 // sub
+                .setSubject(userId.toString())
                 .claim("email", email)
-                .claim("roles", roles.stream()
-                        .map(Enum::name)
-                        .toList())
+                .claim("roles", roles.stream().map(Enum::name).toList())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plusMillis(expirationMillis)))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }
 
-    @Override
-    public boolean validateToken(String token) {
-        try {
-            parseClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException ex) {
-            return false;
+    private PrivateKey loadPrivateKey(Resource resource) throws Exception {
+        String key;
+        try (InputStream is = resource.getInputStream()) {
+            key = new String(is.readAllBytes(), StandardCharsets.UTF_8);
         }
-    }
 
-    @Override
-    public UUID extractUserId(String token) {
-        return UUID.fromString(
-                parseClaims(token).getBody().getSubject()
-        );
-    }
+        key = key.replaceAll("-----BEGIN (.*)-----", "")
+                .replaceAll("-----END (.*)-----", "")
+                .replaceAll("\\s", "");
 
-    @Override
-    public Set<String> extractRoles(String token) {
-        List<String> roles = parseClaims(token)
-                .getBody()
-                .get("roles", List.class);
-        return new HashSet<>(roles);
-    }
-
-    private Jws<Claims> parseClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token);
+        byte[] decoded = Base64.getDecoder().decode(key);
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
+        return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 }
-

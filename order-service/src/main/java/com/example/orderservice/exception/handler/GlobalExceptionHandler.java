@@ -1,8 +1,11 @@
 package com.example.orderservice.exception.handler;
 
+import com.example.orderservice.exception.AuthorizationException;
 import com.example.orderservice.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,12 +42,5 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    //Catch-all fallback
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericException(
-            Exception ex) {
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error" + ex.getMessage());
-    }
 }

@@ -28,6 +28,7 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+src/main/resources/keys/
 
 
 ### VS Code ###
@@ -36,3 +37,4 @@ build/
 # Spring Boot secrets
 application-dev.yml
 .env
+*.key

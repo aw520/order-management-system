@@ -42,17 +42,17 @@ public class AdminController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GeneralSearchProductResponse>> searchProduct(@RequestParam(required = false)  int page,
-                                                                            @RequestParam(required = false)  int size,
+    public ResponseEntity<List<GeneralSearchProductResponse>> searchProduct(@RequestParam(required = false) Integer page,
+                                                                            @RequestParam(required = false) Integer size,
                                                                             @RequestParam(required = false) String keyword,
                                                                             @RequestParam(required = false) Boolean inStock,
                                                                             @RequestParam(required = false) String sortBy,
-                                                                            @RequestParam(required = false) Integer sortDirection){
+                                                                            @RequestParam(required = false) Boolean sortDirection){
         //give general info about all products have name alike
         SearchCriteria criteria = SearchCriteria.builder()
-                .page(page).size(size)
+                .page(page==null?1:page).size(size==null?10:size)
                 .sort(Sortable.fromString(sortBy))
-                .direction(sortDirection)
+                .descending(sortDirection==null||!sortDirection)
                 .keyword(keyword)
                 .inStock(inStock)
                 .build();

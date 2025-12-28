@@ -22,6 +22,8 @@ import com.example.orderservice.service.OrderProcessingAsync;
 import com.example.orderservice.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,12 +33,27 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepositoryCustom orderRepositoryCustom;
     private final OrderRepository orderRepository;
-    private final OrderProcessingAsync orderProcessingAsync;
+
+    @Autowired
+    public OrderServiceImpl(OrderRepositoryCustom orderRepositoryCustom, OrderRepository orderRepository) {
+        this.orderRepositoryCustom = orderRepositoryCustom;
+        this.orderRepository = orderRepository;
+    }
+
+    private OrderProcessingAsync orderProcessingAsync;
+
+    @Autowired
+    public void setOrderProcessingAsync(@Lazy OrderProcessingAsync orderProcessingAsync) {
+        this.orderProcessingAsync = orderProcessingAsync;
+    }
+
+    public OrderProcessingAsync getOrderProcessingAsync() {
+        return orderProcessingAsync;
+    }
 
     @Override
     public List<GeneralOrderSearchResponse> searchOrder(SearchCriteria criteria) {

@@ -29,19 +29,19 @@ public class PublicController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<List<GeneralSearchProductResponse>> searchProduct(@RequestParam(required = false)  Integer page,
                                                                                     @RequestParam(required = false)  Integer size,
                                                                                     @RequestParam(required = false) String keyword,
                                                                                     @RequestParam(required = false) Boolean inStock,
                                                                                     @RequestParam(required = false) String sortBy,
-                                                                                    @RequestParam(required = false) Integer sortDirection){
+                                                                                    @RequestParam(required = false) Boolean sortDirection){
         //can directly from the frontend
         //give general info about all products have name alike
         SearchCriteria criteria = SearchCriteria.builder()
-                .page(page).size(size)
+                .page(page==null?1:page).size(size==null?10:size)
                 .sort(Sortable.fromString(sortBy))
-                .direction(sortDirection)
+                .descending(sortDirection==null||!sortDirection)
                 .keyword(keyword)
                 .inStock(inStock)
                 .build();

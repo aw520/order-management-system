@@ -121,7 +121,7 @@ class ClientControllerTest {
         }
         """;
 
-        mockMvc.perform(get("/orders/search")
+        mockMvc.perform(post("/orders/search").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk());

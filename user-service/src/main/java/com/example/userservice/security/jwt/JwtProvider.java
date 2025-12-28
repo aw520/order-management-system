@@ -13,10 +13,10 @@ public interface JwtProvider {
             Set<UserRole> roles
     );
 
-    boolean validateToken(String token);
+    //boolean validateToken(String token);
 
-    UUID extractUserId(String token);
+    //UUID extractUserId(String token);
 
-    Set<String> extractRoles(String token);
+    //Set<String> extractRoles(String token);
 }
 

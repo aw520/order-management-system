@@ -52,11 +52,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         // sorting
         if(searchCriteria.getSort()!=null){
-            int direction = -1;
-            if(searchCriteria.getDirection() != null){
-                direction = searchCriteria.getDirection();
-            }
-            if(direction==-1){
+            boolean descending = searchCriteria.isDescending();
+            if(descending){
                 query.orderBy(cb.desc(root.get(searchCriteria.getSort().getField())));
             }else{
                 query.orderBy(cb.asc(root.get(searchCriteria.getSort().getField())));

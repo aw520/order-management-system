@@ -1,0 +1,72 @@
+services:
+  mysql:
+    ports:
+      - "3307:3306"
+    image: mysql:8.3
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 3s
+      retries: 10
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_ecommerce_data:/var/lib/mysql
+      - ./db-init:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:7
+
+  user-service:
+    ports:
+      - "8080:8080"
+    build: ./user-service
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/user_db
+      DB_USERNAME: user_user
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - ./secrets/jwt/private.key:/run/secrets/jwt-private.key:ro
+      - ./secrets/jwt/public.key:/run/secrets/jwt-public.key:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+
+  product-service:
+    ports:
+      - "8081:8080"
+    build: ./product-service
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/product_db
+      DB_USERNAME: product_user
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - ./secrets/jwt/public.key:/run/secrets/jwt-public.key:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  order-service:
+    ports:
+      - "8082:8080"
+    build: ./order-service
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/order_db
+      DB_USERNAME: order_user
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      PRODUCT_SERVICE_URL: http://product-service:8080
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - ./secrets/jwt/public.key:/run/secrets/jwt-public.key:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+      product-service:
+        condition: service_started
+
+volumes:
+  mysql_ecommerce_data:

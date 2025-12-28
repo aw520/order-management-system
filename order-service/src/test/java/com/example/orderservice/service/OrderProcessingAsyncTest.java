@@ -6,6 +6,7 @@ import com.example.orderservice.entity.IdempotencyRecord;
 import com.example.orderservice.repository.IdempotencyRecordRepository;
 import com.example.orderservice.request.PlaceOrderRequest;
 import com.example.orderservice.request.ProductOfOrderRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -34,6 +34,12 @@ class OrderProcessingAsyncTest {
 
     @InjectMocks
     private OrderProcessingAsync orderProcessingAsync;
+
+    @BeforeEach
+    void setUp() {
+        //ensure the setter is called
+        orderProcessingAsync.setOrderService(orderService);
+    }
 
     @Test
     void validate_success_callsProductServiceAndHandlesResponse() {

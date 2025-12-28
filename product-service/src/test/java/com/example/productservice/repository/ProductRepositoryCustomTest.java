@@ -93,7 +93,7 @@ class ProductRepositoryCustomTest {
 
         SearchCriteria criteria = SearchCriteria.builder()
                 .sort(Sortable.PRICE)
-                .direction(1) // ascending
+                .descending(false) // ascending
                 .page(1)
                 .size(10)
                 .build();
