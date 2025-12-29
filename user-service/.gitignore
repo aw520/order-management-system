@@ -38,3 +38,4 @@ src/main/resources/keys/
 application-dev.yml
 .env
 *.key
+src/main/resources/*

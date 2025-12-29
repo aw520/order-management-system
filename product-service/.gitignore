@@ -37,3 +37,6 @@ build/
 application-dev.yml
 ../.env
 
+
+src/main/resources/*
+
