@@ -2,6 +2,7 @@ package com.example.orderservice.request;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.ZonedDateTime;
 import java.util.List;

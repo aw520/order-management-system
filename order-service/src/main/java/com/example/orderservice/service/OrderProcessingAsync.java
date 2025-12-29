@@ -1,16 +1,14 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.client.ProductClient;
+import com.example.orderservice.config.ProductClient;
 import com.example.orderservice.dto.IndividualProductValidationDTO;
 import com.example.orderservice.dto.ProductValidationRequest;
 import com.example.orderservice.dto.ProductValidationResponse;
 import com.example.orderservice.entity.IdempotencyRecord;
-import com.example.orderservice.entity.Order;
 import com.example.orderservice.repository.IdempotencyRecordRepository;
 import com.example.orderservice.request.PlaceOrderRequest;
 import com.example.orderservice.request.ProductOfOrderRequest;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
@@ -49,6 +47,8 @@ public class OrderProcessingAsync {
     @Async
     @Transactional
     public void validate(UUID orderId, PlaceOrderRequest placeOrderRequest) {
+
+        System.out.println("validate called");
 
         //save to idempotency table
         IdempotencyRecord record = idempotencyRecordRepository.save(IdempotencyRecord.builder()

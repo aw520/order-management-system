@@ -2,8 +2,10 @@ package com.example.productservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.util.UUID;
 
 @Entity
@@ -14,9 +16,13 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
+    @JdbcTypeCode(Types.BINARY)
     private UUID productId;
     private String productName;
     private BigDecimal productPrice;

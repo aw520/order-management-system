@@ -1,10 +1,12 @@
 package com.example.orderservice.response;
 
 import lombok.Builder;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
 @Builder
+@Getter
 public class ProductOfOrderResponse {
     private String id;
     private String name;

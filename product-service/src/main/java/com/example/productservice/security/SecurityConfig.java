@@ -49,9 +49,28 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // API endpoints — JWT REQUIRED
     @Bean
     @Order(2)
+    public SecurityFilterChain serviceFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/internal/**")
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                );
+        return http.build();
+
+    }
+
+
+    // API endpoints — JWT REQUIRED
+    @Bean
+    @Order(3)
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())

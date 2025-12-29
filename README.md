@@ -13,4 +13,4 @@
 - [ ] OAuth2 authentication
 - [ ] Flyway database migrations
 ## TODO:
-- [ ] Order service generate jwt when communicate with product service
+- [ ] Order service ask for a token from user service (new end point), use it to communicate with product service

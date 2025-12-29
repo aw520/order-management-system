@@ -1,6 +1,6 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.client.ProductClient;
+import com.example.orderservice.config.ProductClient;
 import com.example.orderservice.dto.ProductValidationResponse;
 import com.example.orderservice.entity.IdempotencyRecord;
 import com.example.orderservice.repository.IdempotencyRecordRepository;

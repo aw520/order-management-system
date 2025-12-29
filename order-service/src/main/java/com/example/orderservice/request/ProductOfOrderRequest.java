@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Builder;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class ProductOfOrderRequest {
     @NotNull

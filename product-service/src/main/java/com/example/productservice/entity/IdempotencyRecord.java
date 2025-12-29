@@ -20,6 +20,7 @@ import java.util.UUID;
 public class IdempotencyRecord {
 
     @Id
+    @Column(columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     private UUID idempotencyKey;
 
     @JdbcTypeCode(SqlTypes.JSON)

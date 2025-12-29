@@ -5,7 +5,7 @@ services:
     image: mysql:8.3
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 3s
+      timeout: 2s
       retries: 10
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -15,6 +15,39 @@ services:
 
   redis:
     image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_ecommerce_data:/data
+    command: redis-server --appendonly yes
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft mode
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+
+      # Single-node dev defaults
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=1
+
+      # Allow plaintext
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_ecommerce_data:/bitnami/kafka
 
   user-service:
     ports:
@@ -24,6 +57,7 @@ services:
       DB_URL: jdbc:mysql://mysql:3306/user_db
       DB_USERNAME: user_user
       DB_PASSWORD: ${MYSQL_PASSWORD}
+      #ORDER_SERVICE_CLIENT_SECRET: ${ORDER_SERVICE_CLIENT_SECRET}
       SPRING_PROFILES_ACTIVE: docker
     volumes:
       - ./secrets/jwt/private.key:/run/secrets/jwt-private.key:ro
@@ -49,6 +83,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_started
 
   order-service:
     ports:
@@ -67,6 +103,10 @@ services:
         condition: service_healthy
       product-service:
         condition: service_started
+      kafka:
+        condition: service_started
 
 volumes:
   mysql_ecommerce_data:
+  redis_ecommerce_data:
+  kafka_ecommerce_data:

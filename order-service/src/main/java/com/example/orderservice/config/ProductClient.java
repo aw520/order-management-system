@@ -1,4 +1,4 @@
-package com.example.orderservice.client;
+package com.example.orderservice.config;
 
 import com.example.orderservice.dto.ProductValidationRequest;
 import com.example.orderservice.dto.ProductValidationResponse;
@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
         name = "product-service",
-        url = "${product.service.url}"
+        url = "${PRODUCT_SERVICE_URL}",
+        configuration = FeignConfig.class
 )
 public interface ProductClient {
 
@@ -16,5 +17,7 @@ public interface ProductClient {
     ProductValidationResponse validate(
             @RequestBody ProductValidationRequest request
     );
+
+
 }
 
