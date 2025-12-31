@@ -1,6 +1,5 @@
 package com.example.orderservice.entity;
 
-import com.example.orderservice.dto.ProductValidationRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

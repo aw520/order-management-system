@@ -1,10 +1,7 @@
-package com.example.productservice.response;
+package com.example.common.kafka;
 
-import com.example.productservice.constant.ValidationResult;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 import java.util.List;
 
@@ -12,7 +9,10 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ProductValidationResponse {
+    private String correlationId;
     private ValidationResult result;
     private List<IndividualProductValidationResponse> products;
+    private String orderId;
 }

@@ -1,10 +1,13 @@
-package com.example.productservice.request;
+package com.example.common.kafka;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class IndividualProductValidationDTO {
     private String id;
     private int delta;
