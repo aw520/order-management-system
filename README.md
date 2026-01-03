@@ -107,7 +107,6 @@ order-management-system/
     - Orders will continue to store price snapshots (no recalculation)
 
 - [ ] Add price quote expiration and validation
-- [ ] Use Kafka for messaging between order service and product service
 - [ ] Handle validation errors in order service, ensure product service is able to rollback
 - [ ] Add blob storage for product images
 - [ ] Add log monitoring
