@@ -32,6 +32,7 @@ The system consists of multiple independent microservices:
 
 ### Communication Pattern
 
+- KRaft Kafka between product service and order service
 - Synchronous REST-based communication
 - JSON over HTTP
 
