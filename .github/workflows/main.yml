@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - run: |
+          echo "MYSQL_ROOT_PASSWORD length: ${#MYSQL_ROOT_PASSWORD}"
+
       - name: Create JWT public key file
         run: |
           mkdir -p secrets
@@ -27,6 +30,10 @@ jobs:
 
       - name: Start services
         run: docker compose up -d
+
+      - name: Show MySQL logs
+        if: failure()
+        run: docker logs order-management-system-mysql-1
 
       - name: Show running containers
         run: docker ps
