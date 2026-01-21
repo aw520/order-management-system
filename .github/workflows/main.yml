@@ -1,0 +1,22 @@
+name: Docker Compose CI
+
+on:
+  push:
+    branches: [ cicd ]
+  pull_request:
+
+jobs:
+  docker-compose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build images
+        run: docker compose build
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Show running containers
+        run: docker ps
