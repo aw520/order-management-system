@@ -12,6 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create JWT public key file
+        run: |
+          mkdir -p secrets
+          echo "${{ secrets.JWT_PUBLIC_KEY }}" > secrets/jwt-public.key
+
+      - name: Create JWT private key file
+        run: |
+          mkdir -p secrets
+          echo "${{ secrets.JWT_PRIVATE_KEY }}" > secrets/jwt-private.key
+
       - name: Build images
         run: docker compose build
 

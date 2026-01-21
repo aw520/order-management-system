@@ -34,9 +34,10 @@ build/
 .vscode/
 
 # Spring Boot secrets
-application-dev.yml
 ../.env
 
 
 src/main/resources/*
+!src/main/resources/application-docker.yml
+!src/main/resources/data.sql
 
