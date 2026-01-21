@@ -71,6 +71,9 @@ The system consists of multiple independent microservices, each owning its own d
 4. Order Service consumes the response and updates order status
 
 This pattern follows a **Saga-style asynchronous workflow**, avoiding distributed transactions while maintaining consistency.
+- KRaft Kafka between product service and order service
+- Synchronous REST-based communication
+- JSON over HTTP
 
 ---
 
@@ -159,7 +162,6 @@ order-management-system/
     - Orders will continue to store price snapshots (no recalculation)
 
 - [ ] Add price quote expiration and validation
-- [ ] Use Kafka for messaging between order service and product service
 - [ ] Handle validation errors in order service, ensure product service is able to rollback
 - [ ] Add blob storage for product images
 - [ ] Add log monitoring
