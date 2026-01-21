@@ -1,9 +1,7 @@
 package com.example.orderservice.service.impl;
 
+import com.example.common.kafka.IndividualProductValidationResponse;
 import com.example.orderservice.constant.OrderStatus;
-import com.example.orderservice.constant.ValidationResult;
-import com.example.orderservice.dto.IndividualProductValidationResponse;
-import com.example.orderservice.dto.ProductValidationResponse;
 import com.example.orderservice.entity.Order;
 import com.example.orderservice.entity.OrderProduct;
 import com.example.orderservice.exception.AuthorizationException;
@@ -12,12 +10,14 @@ import com.example.orderservice.exception.OrderStatusUpdateException;
 import com.example.orderservice.exception.ValidationException;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.repository.OrderRepositoryCustom;
+import com.example.orderservice.request.PlaceOrderRequest;
+import com.example.orderservice.request.ProductOfOrderRequest;
 import com.example.orderservice.response.OrderResponse;
-import com.example.orderservice.service.OrderProcessingAsync;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.orderservice.service.kafka.ProductValidationProducer;
+import com.example.common.kafka.ProductValidationResponse;
+import com.example.common.kafka.ValidationResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
@@ -44,7 +43,8 @@ class OrderServiceImplTest {
     private OrderRepositoryCustom orderRepositoryCustom;
 
     @Mock
-    private OrderProcessingAsync orderProcessingAsync;
+    private ProductValidationProducer productValidationProducer;
+
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -342,6 +342,42 @@ class OrderServiceImplTest {
         );
 
         verify(orderRepository, never()).save(any());
+    }
+
+
+    @Test
+    void placeOrder_sendsKafkaMessage_andReturnsResponse() {
+        UUID clientId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+
+        PlaceOrderRequest request = PlaceOrderRequest.builder()
+                .address("test-address")
+                .products(List.of(
+                        new ProductOfOrderRequest(productId.toString(), 2)
+                ))
+                .build();
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer(invocation -> {
+                    Order o = invocation.getArgument(0);
+                    if (o.getOrderId() == null) {
+                        o.setOrderId(UUID.randomUUID());
+                    }
+                    return o;
+                });
+
+        //when
+        OrderResponse response = orderService.placeOrder(clientId, request);
+
+        //then: response is returned immediately
+        assertEquals(OrderStatus.NEW.getValue(), response.getStatus());
+        assertEquals(1, response.getProducts().size());
+
+        //Kafka producer invoked exactly once
+        verify(productValidationProducer, times(1))
+                .send(any(UUID.class), eq(request));
+
+        // ensure no other async behavior
+        verifyNoMoreInteractions(productValidationProducer);
     }
 
 

@@ -1,7 +1,7 @@
 package com.example.productservice.entity;
 
-import com.example.productservice.response.ProductValidationResponse;
 import jakarta.persistence.*;
+import com.example.common.kafka.ProductValidationResponse;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;

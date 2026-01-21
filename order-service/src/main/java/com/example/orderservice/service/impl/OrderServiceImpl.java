@@ -1,9 +1,7 @@
 package com.example.orderservice.service.impl;
 
+import com.example.common.kafka.IndividualProductValidationResponse;
 import com.example.orderservice.constant.OrderStatus;
-import com.example.orderservice.constant.ValidationResult;
-import com.example.orderservice.dto.IndividualProductValidationResponse;
-import com.example.orderservice.dto.ProductValidationResponse;
 import com.example.orderservice.dto.SearchCriteria;
 import com.example.orderservice.entity.Order;
 import com.example.orderservice.entity.OrderProduct;
@@ -18,12 +16,13 @@ import com.example.orderservice.request.ProductOfOrderRequest;
 import com.example.orderservice.response.GeneralOrderSearchResponse;
 import com.example.orderservice.response.OrderResponse;
 import com.example.orderservice.response.ProductOfOrderResponse;
-import com.example.orderservice.service.OrderProcessingAsync;
 import com.example.orderservice.service.OrderService;
+import com.example.orderservice.service.kafka.ProductValidationProducer;
 import jakarta.transaction.Transactional;
+import com.example.common.kafka.ProductValidationResponse;
+import com.example.common.kafka.ValidationResult;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,28 +31,14 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepositoryCustom orderRepositoryCustom;
     private final OrderRepository orderRepository;
-
-    @Autowired
-    public OrderServiceImpl(OrderRepositoryCustom orderRepositoryCustom, OrderRepository orderRepository) {
-        this.orderRepositoryCustom = orderRepositoryCustom;
-        this.orderRepository = orderRepository;
-    }
-
-    private OrderProcessingAsync orderProcessingAsync;
-
-    @Autowired
-    public void setOrderProcessingAsync(@Lazy OrderProcessingAsync orderProcessingAsync) {
-        this.orderProcessingAsync = orderProcessingAsync;
-    }
-
-    public OrderProcessingAsync getOrderProcessingAsync() {
-        return orderProcessingAsync;
-    }
+    private final ProductValidationProducer productValidationProducer;
 
     @Override
     public List<GeneralOrderSearchResponse> searchOrder(SearchCriteria criteria) {
@@ -91,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
                     .purchasedQuantity(product.getQuantity())
                     .fulfilledQuantity(0)
                     .build();
+            orderProduct.setOrder(order);
             orderProducts.add(orderProduct);
         }
         order.setProducts(orderProducts);
@@ -119,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
         response.setProducts(productOfOrderResponses);
 
         //call product service to validate products
-        orderProcessingAsync.validate(order.getOrderId(), request);
+        productValidationProducer.send(order.getOrderId(), request);
         return response;
     }
 
@@ -178,6 +164,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(()->new OrderNotFoundException(orderId.toString()));
         List<OrderProduct> orderProducts = order.getProducts();
 
+        log.info("handling validation response for order: " + order);
         //check the response is valid (1-1 match of response and order)
         Map<UUID, OrderProduct> orderProductMap =
                 orderProducts.stream()
@@ -189,7 +176,7 @@ public class OrderServiceImpl implements OrderService {
                 response.getProducts();
 
         if (responseProducts.size() != orderProductMap.size()) {
-            throw new ValidationException("Product count mismatch");
+            throw new ValidationException("Product count mismatch, expected: " + orderProductMap.size() + ", actual: " + responseProducts.size());
         }
 
         for (IndividualProductValidationResponse resp : responseProducts) {
@@ -213,7 +200,7 @@ public class OrderServiceImpl implements OrderService {
         if (response.getResult()==ValidationResult.PARTIAL) {
             order.setOrderStatus(OrderStatus.PARTIAL_CONFIRMED);
         }
-        if (response.getResult()==ValidationResult.NONE){
+        if (response.getResult()== ValidationResult.NONE){
             order.setOrderStatus(OrderStatus.CANCELLED);
             return;
         }

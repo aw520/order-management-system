@@ -1,8 +1,6 @@
 package com.example.productservice.service.impl;
 
-import com.example.productservice.constant.ValidationResult;
-import com.example.productservice.dto.ProductUpdateInfo;
-import com.example.productservice.dto.SearchCriteria;
+import com.example.productservice.dto.*;
 import com.example.productservice.entity.IdempotencyRecord;
 import com.example.productservice.entity.Product;
 import com.example.productservice.exception.InvalidUpdateException;
@@ -10,10 +8,13 @@ import com.example.productservice.exception.ProductNotFoundException;
 import com.example.productservice.repository.IdempotencyRecordRepository;
 import com.example.productservice.repository.ProductRepository;
 import com.example.productservice.repository.ProductRepositoryCustom;
-import com.example.productservice.request.IndividualProductValidationDTO;
 import com.example.productservice.response.*;
 import com.example.productservice.service.ProductService;
 import jakarta.transaction.Transactional;
+import com.example.common.kafka.IndividualProductValidationDTO;
+import com.example.common.kafka.IndividualProductValidationResponse;
+import com.example.common.kafka.ProductValidationResponse;
+import com.example.common.kafka.ValidationResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -68,7 +69,9 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductValidationResponse validateProduct(
             UUID idempotencyKey,
-            List<IndividualProductValidationDTO> products
+            List<IndividualProductValidationDTO> products,
+            UUID correlationId,
+            UUID orderId
     ) {
 
         // idempotency check
@@ -141,6 +144,8 @@ public class ProductServiceImpl implements ProductService {
         ProductValidationResponse response = ProductValidationResponse.builder()
                 .result(result)
                 .products(responses)
+                .correlationId(correlationId.toString())
+                .orderId(orderId.toString())
                 .build();
 
         // persist idempotency record

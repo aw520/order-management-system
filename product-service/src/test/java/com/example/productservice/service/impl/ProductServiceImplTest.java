@@ -1,6 +1,5 @@
 package com.example.productservice.service.impl;
 
-import com.example.productservice.constant.ValidationResult;
 import com.example.productservice.dto.ProductUpdateInfo;
 import com.example.productservice.dto.SearchCriteria;
 import com.example.productservice.entity.IdempotencyRecord;
@@ -10,9 +9,10 @@ import com.example.productservice.exception.ProductNotFoundException;
 import com.example.productservice.repository.IdempotencyRecordRepository;
 import com.example.productservice.repository.ProductRepository;
 import com.example.productservice.repository.ProductRepositoryCustom;
-import com.example.productservice.request.IndividualProductValidationDTO;
-import com.example.productservice.response.ProductValidationResponse;
 import com.example.productservice.response.SpecificProductResponse;
+import com.example.common.kafka.IndividualProductValidationDTO;
+import com.example.common.kafka.ProductValidationResponse;
+import com.example.common.kafka.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -139,6 +139,8 @@ class ProductServiceImplTest {
     @Test
     void validateProduct_idempotencyHit_shouldReturnCachedResponse() {
         UUID idempotencyKey = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        UUID correlationId = UUID.randomUUID();
 
         ProductValidationResponse cached = ProductValidationResponse.builder()
                 .result(ValidationResult.FULL)
@@ -153,7 +155,7 @@ class ProductServiceImplTest {
         when(idempotencyRecordRepository.findByIdempotencyKey(idempotencyKey)).thenReturn(record);
 
         ProductValidationResponse resp =
-                productService.validateProduct(idempotencyKey, List.of());
+                productService.validateProduct(idempotencyKey, List.of(), correlationId, orderId);
 
         assertThat(resp.getResult()).isEqualTo(ValidationResult.FULL);
 
@@ -164,9 +166,11 @@ class ProductServiceImplTest {
     @Test
     void validateProduct_fullFulfillment_shouldReturnFULL_andSaveIdempotency() {
         UUID idempotencyKey = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        UUID correlationId = UUID.randomUUID();
 
         // NOTE: This assumes IndividualProductValidationDTO has setters.
-        IndividualProductValidationDTO req = new IndividualProductValidationDTO();
+        IndividualProductValidationDTO req = IndividualProductValidationDTO.builder().build();
         req.setId(productId.toString());
         req.setDelta(-3); // place order => decrease by 3
 
@@ -176,7 +180,7 @@ class ProductServiceImplTest {
         when(idempotencyRecordRepository.save(any(IdempotencyRecord.class))).thenAnswer(inv -> inv.getArgument(0));
 
         ProductValidationResponse resp =
-                productService.validateProduct(idempotencyKey, List.of(req));
+                productService.validateProduct(idempotencyKey, List.of(req), correlationId, orderId);
 
         assertThat(resp.getResult()).isEqualTo(ValidationResult.FULL);
         assertThat(resp.getProducts()).hasSize(1);
@@ -190,14 +194,16 @@ class ProductServiceImplTest {
     @Test
     void validateProduct_deltaNonNegative_shouldThrow() {
         UUID idempotencyKey = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        UUID correlationId = UUID.randomUUID();
 
-        IndividualProductValidationDTO req = new IndividualProductValidationDTO();
+        IndividualProductValidationDTO req = IndividualProductValidationDTO.builder().build();
         req.setId(productId.toString());
         req.setDelta(1); // invalid (cannot increase)
 
         when(idempotencyRecordRepository.findByIdempotencyKey(idempotencyKey)).thenReturn(null);
 
-        assertThatThrownBy(() -> productService.validateProduct(idempotencyKey, List.of(req)))
+        assertThatThrownBy(() -> productService.validateProduct(idempotencyKey, List.of(req), correlationId, orderId))
                 .isInstanceOf(InvalidUpdateException.class)
                 .hasMessageContaining("Cannot increase quantity");
 
@@ -208,8 +214,10 @@ class ProductServiceImplTest {
     @Test
     void validateProduct_duplicateInsert_shouldReadExistingAndReturn() {
         UUID idempotencyKey = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        UUID correlationId = UUID.randomUUID();
 
-        IndividualProductValidationDTO req = new IndividualProductValidationDTO();
+        IndividualProductValidationDTO req = IndividualProductValidationDTO.builder().build();
         req.setId(productId.toString());
         req.setDelta(-1);
 
@@ -231,7 +239,7 @@ class ProductServiceImplTest {
         doThrow(new RuntimeException("duplicate")).when(idempotencyRecordRepository).save(any());
 
         ProductValidationResponse resp =
-                productService.validateProduct(idempotencyKey, List.of(req));
+                productService.validateProduct(idempotencyKey, List.of(req), correlationId, orderId);
 
         assertThat(resp.getResult()).isEqualTo(ValidationResult.FULL);
         verify(idempotencyRecordRepository, times(1)).save(any());
@@ -240,8 +248,10 @@ class ProductServiceImplTest {
     @Test
     void validateProduct_partialFulfillment_shouldReturnPARTIAL() {
         UUID idempotencyKey = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        UUID correlationId = UUID.randomUUID();
 
-        IndividualProductValidationDTO req = new IndividualProductValidationDTO();
+        IndividualProductValidationDTO req = IndividualProductValidationDTO.builder().build();
         req.setId(productId.toString());
         req.setDelta(-5);
 
@@ -258,7 +268,7 @@ class ProductServiceImplTest {
                 .thenAnswer(inv -> inv.getArgument(0));
 
         ProductValidationResponse resp =
-                productService.validateProduct(idempotencyKey, List.of(req));
+                productService.validateProduct(idempotencyKey, List.of(req), correlationId, orderId);
 
         assertThat(resp.getResult()).isEqualTo(ValidationResult.PARTIAL);
 
@@ -273,8 +283,10 @@ class ProductServiceImplTest {
     @Test
     void validateProduct_noneFulfillment_shouldReturnNONE() {
         UUID idempotencyKey = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        UUID correlationId = UUID.randomUUID();
 
-        IndividualProductValidationDTO req = new IndividualProductValidationDTO();
+        IndividualProductValidationDTO req = IndividualProductValidationDTO.builder().build();
         req.setId(productId.toString());
         req.setDelta(-4);
 
@@ -290,7 +302,7 @@ class ProductServiceImplTest {
                 .thenAnswer(inv -> inv.getArgument(0));
 
         ProductValidationResponse resp =
-                productService.validateProduct(idempotencyKey, List.of(req));
+                productService.validateProduct(idempotencyKey, List.of(req), correlationId, orderId);
 
         assertThat(resp.getResult()).isEqualTo(ValidationResult.NONE);
 

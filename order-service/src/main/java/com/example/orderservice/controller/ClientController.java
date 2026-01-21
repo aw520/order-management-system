@@ -49,7 +49,7 @@ public class ClientController {
 
     //Client can search order by id
     @GetMapping("/search/{orderId}")
-    public ResponseEntity<OrderResponse> searchOrder(@PathVariable String orderId, Authentication authentication){
+    public ResponseEntity<OrderResponse> searchOrder(@PathVariable("orderId") String orderId, Authentication authentication){
         UUID clientId = UUID.fromString(authentication.getName());
         OrderResponse response = orderService.getOrderById(UUID.fromString(orderId), false, clientId);
         return ResponseEntity.ok(response);
@@ -66,7 +66,7 @@ public class ClientController {
 
     //Client can cancel their own order
     @PostMapping("/cancel/{orderId}")
-    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable String orderId,
+    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable("orderId") String orderId,
                                                      Authentication authentication){
         UUID clientId = UUID.fromString(authentication.getName());
         OrderResponse response = orderService.cancelOrder(UUID.fromString(orderId), false, clientId);

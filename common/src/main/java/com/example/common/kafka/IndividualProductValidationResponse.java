@@ -1,4 +1,4 @@
-package com.example.productservice.response;
+package com.example.common.kafka;
 
 import lombok.*;
 
@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class IndividualProductValidationResponse {
     private String productId;
     private String productName;
