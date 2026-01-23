@@ -47,6 +47,7 @@ services:
       - kafka_ecommerce_data:/mnt/shared/config
 
   user-service:
+    image: laikawu/user-service:latest
     ports:
       - "8080:8080"
     build:
@@ -69,6 +70,7 @@ services:
 
 
   product-service:
+    image: laikawu/product-service:latest
     ports:
       - "8081:8080"
     build:
@@ -88,6 +90,7 @@ services:
         condition: service_started
 
   order-service:
+    image: laikawu/order-service:latest
     ports:
       - "8082:8080"
     build:
