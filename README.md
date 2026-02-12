@@ -154,7 +154,7 @@ order-management-system/
 └── README.md
 ```
 
-## Future Improvements
+## Future Improvements/TODO:
 
 - [ ] Introduce product price history in ProductService
     - Persist historical price records with effective timestamps
@@ -167,5 +167,5 @@ order-management-system/
 - [ ] Add log monitoring
 - [ ] OAuth2 authentication
 - [ ] Flyway database migrations
-## TODO:
 - [ ] Order service ask for a token from user service (new end point), use it to communicate with product service
+- [ ] Use Nginx as reverse proxy
