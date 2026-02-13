@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  sql:
+    init:
+      mode: always
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: file:/run/secrets/jwt-public.key
+
+product:
+  service:
+    url: http://product-service:8080
+
+security:
+  jwt:
+    private-key: file:/run/secrets/jwt-private.key
+    access-token-expiration-minutes: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    org.springframework.jdbc.datasource.init: DEBUG

@@ -15,6 +15,9 @@
 !**/order-service/src/main/resources/application.yml
 !**/product-service/src/main/resources/application.yml
 !**/user-service/src/main/resources/application.yml
+!**/order-service/src/main/resources/application-docker.yml
+!**/product-service/src/main/resources/application-docker.yml
+!**/user-service/src/main/resources/application-docker.yml
 .idea/
 .env
 *.key

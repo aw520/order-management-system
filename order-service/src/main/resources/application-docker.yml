@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  security:
+    oauth2:
+
+      resourceserver:
+        jwt:
+          public-key-location: file:/run/secrets/jwt-public.key
+
+      client:
+        registration:
+          product-service:
+            client-id: order-service
+            client-secret: ${ORDER_SERVICE_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            scope: product.validate
+        provider:
+          product-service:
+            token-uri: http://auth-server:9000/oauth2/token
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: order-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.example.common.kafka.ProductValidationResponse
+      auto-offset-reset: earliest
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
