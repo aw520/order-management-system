@@ -26,15 +26,27 @@ public class JwtProviderImpl implements JwtProvider {
     private final long expirationMillis;
 
     public JwtProviderImpl(
-            @Value("${security.jwt.private-key}") Resource privateKeyResource,
+            // Change from Resource to String to accept the raw key content directly
+            @Value("${security.jwt.private-key}") String privateKeyContent,
             @Value("${security.jwt.access-token-expiration-minutes}") long expirationMinutes
     ) {
         try {
-            this.privateKey = loadPrivateKey(privateKeyResource);
+            this.privateKey = parsePrivateKey(privateKeyContent);
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to load private key", e);
+            throw new IllegalStateException("Failed to parse private key from environment variable", e);
         }
         this.expirationMillis = expirationMinutes * 60 * 1000;
+    }
+
+    private PrivateKey parsePrivateKey(String keyContent) throws Exception {
+        String cleanKey = keyContent
+                .replaceAll("-----BEGIN (.*)-----", "")
+                .replaceAll("-----END (.*)-----", "")
+                .replaceAll("\\s", "");
+
+        byte[] decoded = Base64.getDecoder().decode(cleanKey);
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
+        return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
     @Override
