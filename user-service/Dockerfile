@@ -30,6 +30,13 @@ WORKDIR /app
 # Copy jar from build stage
 COPY --from=builder /app/user-service/target/*.jar app.jar
 
+COPY entrypoint.sh /entrypoint.sh
+
+# Give the script execution permissions
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","app.jar"]
+# Tell the container to run the script instead of running 'java -jar' directly
+ENTRYPOINT ["/entrypoint.sh"]
+

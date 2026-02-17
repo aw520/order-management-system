@@ -23,15 +23,17 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          public-key-location: file:/run/secrets/jwt-public.key
+          #TODO
+          public-key-location: file:${JWT_PUBLIC_KEY_PATH:/run/secrets/jwt-public.key}
 
 product:
   service:
-    url: http://product-service:8080
+    url: ${PRODUCT_SERVICE_URL} #TODO
 
 security:
   jwt:
-    private-key: file:/run/secrets/jwt-private.key
+    #TODO
+    private-key: file:${JWT_PRIVATE_KEY_PATH:/run/secrets/jwt-private.key}
     access-token-expiration-minutes: 30
 
 management:
@@ -42,4 +44,4 @@ management:
 
 logging:
   level:
-    org.springframework.jdbc.datasource.init: DEBUG
+    org.springframework.jdbc.datasource.init: INFO
