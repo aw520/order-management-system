@@ -6,7 +6,6 @@ spring:
 
   security:
     oauth2:
-
       resourceserver:
         jwt:
           public-key-location: file:/run/secrets/jwt-public.key
@@ -20,10 +19,15 @@ spring:
             scope: product.validate
         provider:
           product-service:
-            token-uri: http://auth-server:9000/oauth2/token
+            token-uri: http://user-service.oms.local:8080/oauth2/token
 
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: AWS_MSK_IAM
+      sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
+      sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -38,8 +42,7 @@ spring:
         spring.json.value.default.type: com.example.common.kafka.ProductValidationResponse
       auto-offset-reset: earliest
 
-
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true

@@ -2,7 +2,7 @@ name: Docker Compose CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ aws-deloyment ]
   pull_request:
 
 jobs:
@@ -40,12 +40,12 @@ jobs:
       - name: Push images
         run: docker compose push
 
-      - name: Start services
-        run: docker compose up -d
+      #- name: Start services
+       # run: docker compose up -d
 
       #- name: Show MySQL logs
       #  if: failure()
       #  run: docker logs order-management-system-mysql-1
 
-      - name: Show running containers
-        run: docker ps
+      #- name: Show running containers
+       # run: docker ps
