@@ -28,7 +28,7 @@ WORKDIR /app
 
 COPY --from=builder /app/order-service/target/*.jar app.jar
 
-COPY entrypoint.sh /entrypoint.sh
+COPY order-service/entrypoint.sh /entrypoint.sh
 
 # Give the script execution permissions
 RUN chmod +x /entrypoint.sh

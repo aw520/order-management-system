@@ -30,7 +30,7 @@ WORKDIR /app
 # Copy jar from build stage
 COPY --from=builder /app/user-service/target/*.jar app.jar
 
-COPY entrypoint.sh /entrypoint.sh
+COPY user-service/entrypoint.sh /entrypoint.sh
 
 # Give the script execution permissions
 RUN chmod +x /entrypoint.sh
