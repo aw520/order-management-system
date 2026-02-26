@@ -40,3 +40,4 @@ EXPOSE 8080
 # Tell the container to run the script instead of running 'java -jar' directly
 ENTRYPOINT ["/entrypoint.sh"]
 
+
