@@ -24,7 +24,7 @@ spring:
       resourceserver:
         jwt:
           #TODO
-          public-key-location: file:${JWT_PUBLIC_KEY_PATH:/run/secrets/jwt-public.key}
+          public-key-location: file:/run/secrets/jwt-public.key
 
 product:
   service:
@@ -32,8 +32,7 @@ product:
 
 security:
   jwt:
-    #TODO
-    private-key: file:${JWT_PRIVATE_KEY_PATH:/run/secrets/jwt-private.key}
+    private-key: file:/run/secrets/jwt-private.key
     access-token-expiration-minutes: 30
 
 management:
