@@ -39,5 +39,6 @@ build/
 
 src/main/resources/*
 !src/main/resources/application-docker.yml
+!src/main/resources/application-aws.yml
 !src/main/resources/data.sql
 

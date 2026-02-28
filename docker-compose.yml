@@ -116,3 +116,4 @@ volumes:
   mysql_ecommerce_data:
   redis_ecommerce_data:
   kafka_ecommerce_data:
+

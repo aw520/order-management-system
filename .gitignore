@@ -18,8 +18,9 @@
 !**/order-service/src/main/resources/application-docker.yml
 !**/product-service/src/main/resources/application-docker.yml
 !**/user-service/src/main/resources/application-docker.yml
+!**/order-service/src/main/resources/application-aws.yml
 .idea/
 .env
 *.key
 .dockerignore
-
+/db-init/

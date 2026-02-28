@@ -40,6 +40,7 @@ public class ProductValidationListener {
             );
         }catch (Exception e){
             //TODO: update response format
+            log.error("Validation failed, request={}", request, e);
             /*
             kafkaTemplate.send(
                     "product.validate.response",
