@@ -1,4 +1,3 @@
-echo "ENTRYPOINT.SH ACTUALLY RAN"
 #!/bin/sh
 #create the directory
 mkdir -p /run/secrets
