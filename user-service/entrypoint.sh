@@ -13,6 +13,7 @@ if [ ! -z "$JWT_PUBLIC_KEY_CONTENT" ]; then
   echo "$JWT_PUBLIC_KEY_CONTENT" > /run/secrets/jwt-public.key
 fi
 
+'''
 echo "=== DEBUG: File check ==="
 ls -l /run/secrets || true
 
@@ -26,6 +27,7 @@ echo "=== DEBUG: First lines of private key ==="
 head -n 3 /run/secrets/jwt-private.key || true
 
 echo "=== DEBUG END ==="
+'''
 
 #hand over control to the Java application
 exec java -jar app.jar
