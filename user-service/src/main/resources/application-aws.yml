@@ -10,8 +10,8 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      cluster:
+        nodes: ${REDIS_HOST}:${REDIS_PORT}
       ssl:
         enabled: true
 
