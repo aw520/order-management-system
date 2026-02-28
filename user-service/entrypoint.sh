@@ -22,6 +22,9 @@ head -n 3 /run/secrets/jwt-public.key || true
 echo "=== DEBUG: Literal \\n check ==="
 echo "$JWT_PUBLIC_KEY_CONTENT" | grep -o '\\n' | head -n 3 || echo "No literal \\n found"
 
+echo "=== DEBUG: First lines of private key ==="
+head -n 3 /run/secrets/jwt-private.key || true
+
 echo "=== DEBUG END ==="
 
 #hand over control to the Java application
